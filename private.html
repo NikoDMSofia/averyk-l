@@ -1280,7 +1280,8 @@
         modalDescription=$("moneyModalDescription"), confirmMoneyBtn=$("confirmMoneyBtn"),
         modalError=$("modalError"), emailToast=$("emailToast");
 
-  let txType="deposit", rows=[], pinTimer=null, channel=null, unlocked=false;
+  let txType="deposit", rows=[], pinTimer=null, channel=null, unlocked=false, currentUserId=null;
+  const NIKI_UID="47f3c30f-c570-4355-bbdc-971c47a5441e";
 
   // Supabase login is required once per browser/device; the existing PIN remains the frequent privacy lock.
   const auth=document.createElement("div");
@@ -1317,6 +1318,12 @@
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&unlocked)hardLock(false)});
   window.addEventListener("pagehide",()=>hardLock(false));
 
+  function applyProfileIdentity(){
+    const avery=currentUserId && currentUserId!==NIKI_UID;
+    document.querySelectorAll(".lock-badge").forEach(el=>{if(el.textContent.includes("Niki & Avery")||el.textContent.includes("Avery & Niki"))el.textContent=avery?"🔐 Avery & Niki":"🔐 Niki & Avery"});
+    document.querySelectorAll(".info-value").forEach(el=>{if(el.textContent.trim()==="Niki & Avery"||el.textContent.trim()==="Avery & Niki")el.textContent=avery?"Avery & Niki":"Niki & Avery"});
+  }
+
   function render(){
     const b=balance(); [mainBalance,savedBalance,cardBalance,activityBalance].forEach(el=>{if(el)el.textContent=eur(b)});
     transactionsList.innerHTML="";
@@ -1327,8 +1334,11 @@
       <div><div class="transaction-person"></div><div class="transaction-meta">${t.type==="withdrawal"?"Withdrawal":"Deposit"} · ${fmtDate(t.transaction_date)}</div></div>
       <div class="transaction-value">${t.type==="withdrawal"?"−":"+"}${eur(t.amount)}</div>`;
       row.querySelector(".transaction-person").textContent=t.name;
-      const del=document.createElement("button");del.type="button";del.className="transaction-delete-btn";del.textContent="Delete";del.onclick=()=>openDelete(t);
-      row.appendChild(del);transactionsList.appendChild(row);
+      if(currentUserId===NIKI_UID){
+        const del=document.createElement("button");del.type="button";del.className="transaction-delete-btn";del.textContent="Delete";del.onclick=()=>openDelete(t);
+        row.appendChild(del);
+      }
+      transactionsList.appendChild(row);
     });
   }
   async function loadRows(){
@@ -1389,13 +1399,14 @@
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!delOverlay.hidden)closeDelete();$("motivationOverlay").hidden=true;$("withdrawNoticeOverlay").hidden=true;if(modal.classList.contains("show")){modal.classList.remove("show");modal.setAttribute("aria-hidden","true")}}});
 
   const {data:{session}}=await sb.auth.getSession();
-  if(session){auth.style.display="none";lockView.style.display="flex";accountView.style.display="none"}
+  if(session){currentUserId=session.user?.id||null;applyProfileIdentity();auth.style.display="none";lockView.style.display="flex";accountView.style.display="none"}
   else{auth.style.display="block";lockView.style.display="none";accountView.style.display="none"}
 
   $("backendLoginForm").addEventListener("submit",async e=>{
     e.preventDefault();const err=$("backendAuthError");err.textContent="Signing in…";
-    const {error}=await sb.auth.signInWithPassword({email:$("backendEmail").value.trim(),password:$("backendPassword").value});
+    const {data,error}=await sb.auth.signInWithPassword({email:$("backendEmail").value.trim(),password:$("backendPassword").value});
     if(error){err.textContent=error.message;return}
+    currentUserId=data.user?.id||null;applyProfileIdentity();
     $("backendPassword").value="";auth.style.display="none";lockView.style.display="flex";accountView.style.display="none";pinInput.focus();
   });
 
