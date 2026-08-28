@@ -1,0 +1,73 @@
+<!doctype html><html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Love Letter · Avery</title><link rel="stylesheet" href="assets/style.css">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+
+
+
+<meta property="og:title" content="For Avery - from Niki">
+<meta name="twitter:title" content="For Avery - from Niki">
+</head><body>
+<div class="progress"></div>
+<div class="sky"><span class="star s1">✦</span><span class="star s2">✧</span><span class="star s3">✦</span><span class="heart h1">♡</span><span class="heart h2">♡</span><span class="heart h3">♡</span></div>
+<header><div class="wrap navshell"><a class="brand" href="index.html">Avery <small>from Niki</small></a><nav class="navlinks"><a class="" href="index.html">Home</a><a class="" href="letter.html">The Letter</a><a class="" href="memories.html">Memories</a><a class="active" href="love-letter.html">The Love Letter</a><a class="" href="for-us.html">For Us ✦</a>
+<a href="private.html">🔒 Private</a>
+</nav><button class="menu" aria-label="Меню">☰</button></div></header>
+<main>
+<section class="wrap lovehero reveal"><div><div class="kicker">14 August 2026</div><h1>My Love.</h1><p class="lead">A quieter room inside the same story.</p></div></section>
+<section class="wrap love-stage">
+<article class="love-paper reveal">
+<h2>My Love,</h2>
+<p class="strong">I’m writing this letter not to blame you, pressure you, or make you feel guilty. I’m writing because there are things I simply can’t leave unsaid.</p>
+<p class="strong">I miss you.</p>
+<p>I miss having you beside me, our conversations, our little moments, and the feeling of sharing my life with you.</p>
+<p>I know that a lot of things built up between us. I know that we hurt each other, and I know that I made mistakes. I have had a lot of time to think about those mistakes, and I am sorry for the ways in which I hurt you.</p>
+<p>I don't expect you to forget what happened, and I don't expect you to make any decision now.</p>
+<p class="strong">I only want you to know that my love for you was real, and it still is.</p>
+<p>If one day, you would like to talk, I would be willing to sit down with you calmly — without blame, without pride, and without keeping score of the past.</p>
+<p>I don't know what the future holds for us.<br>But I hope that whatever happens, we can remember that what we had was real and that we mattered to each other.</p>
+<p class="strong">I love you.</p>
+<div class="sig">Niki</div>
+<p class="ps">P.S. The headphones are your birthday gift from me. You didn't need to leave them behind. They are yours, and so is my love for you.</p>
+<div class="date">14.08.2026</div>
+</article>
+</section>
+<div class="wrap">
+  <div class="actions reveal bottom-nav-actions love-letter-bottom-actions">
+<a class="btn primary" href="index.html">Home</a>
+<a class="btn primary" href="letter.html">The Letter</a>
+<a class="btn primary" href="memories.html">Memories</a>
+<a class="btn ghost" href="love-letter.html" aria-current="page">The Love Letter</a>
+<a class="btn primary" href="for-us.html">For Us ✦</a>
+</div>
+</div>
+</main>
+<div class="lightbox"><button>×</button><img alt="Уголемен спомен"></div>
+<footer><div class="wrap foot"><div class="foot-sign">With love ♡</div><div class="foot-copy">Created by <span style="color:#8B1E2D;font-weight:700;">NdM Company ♥</span> · All rights reserved.</div></div></footer><script src="assets/app.js"></script>
+
+<audio id="loveLetterMusic" loop preload="auto">
+  <source src="assets/love-theme.mp3" type="audio/mpeg">
+</audio>
+<script>
+(() => {
+  const audio = document.getElementById('loveLetterMusic');
+  if (!audio) return;
+  audio.volume = 0.05;
+
+  const play = () => audio.play().catch(() => {});
+  play();
+
+  // If audible autoplay is blocked by the browser, start on first interaction.
+  const startOnInteraction = () => {
+    play();
+    window.removeEventListener('pointerdown', startOnInteraction);
+    window.removeEventListener('touchstart', startOnInteraction);
+    window.removeEventListener('keydown', startOnInteraction);
+  };
+  window.addEventListener('pointerdown', startOnInteraction, {passive:true});
+  window.addEventListener('touchstart', startOnInteraction, {passive:true});
+  window.addEventListener('keydown', startOnInteraction);
+})();
+</script>
+
+</body></html>

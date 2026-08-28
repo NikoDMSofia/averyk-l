@@ -1,0 +1,63 @@
+<!doctype html><html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Memories · Avery</title><link rel="stylesheet" href="assets/style.css">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+
+
+
+<meta property="og:title" content="For Avery - from Niki">
+<meta name="twitter:title" content="For Avery - from Niki">
+</head><body>
+<div class="progress"></div>
+<div class="sky"><span class="star s1">✦</span><span class="star s2">✧</span><span class="star s3">✦</span><span class="heart h1">♡</span><span class="heart h2">♡</span><span class="heart h3">♡</span></div>
+<header><div class="wrap navshell"><a class="brand" href="index.html">Avery <small>from Niki</small></a><nav class="navlinks"><a class="" href="index.html">Home</a><a class="" href="letter.html">The Letter</a><a class="active" href="memories.html">Memories</a><a class="" href="love-letter.html">The Love Letter</a><a class="" href="for-us.html">For Us ✦</a>
+<a href="private.html">🔒 Private</a>
+</nav><button class="menu" aria-label="Меню">☰</button></div></header>
+<main>
+<section class="wrap memory-intro reveal"><div class="kicker">Memories</div><h1>What I choose to remember.</h1><p class="lead">Not evidence. Not arguments. Just moments that were real and beautiful while they were ours.</p></section>
+<section class="wrap memory-grid">
+<div class="memory m1 reveal"><img src="assets/img/first.jpg" alt=""><div class="cap"><small>10.06.2026</small>The first photo you ever took of me… such an ordinary moment, and yet today it is one of those memories I would like to hold on to forever.</div></div>
+<div class="memory m2 reveal"><img src="assets/img/sleep.jpg" alt=""><div class="cap"><small>04.07.2026</small>There was something so peaceful about watching you sleep… as if, for a little while, the whole world went quiet, and simply having you beside me was enough.</div></div>
+<div class="memory m3 reveal"><img src="assets/img/birthday1.jpg" alt=""><div class="cap"><small>22.07.2026 · 01:30</small>An hour and a half after midnight. You were officially an adult, holding your first cocktail as one…</div></div>
+<div class="memory m4 reveal"><img src="assets/img/birthday2.jpg" alt=""><div class="cap"><small>22.07.2026 · 01:30</small>…and I had the best seat in the world — right across from your smile.</div></div>
+<div class="memory m5 reveal"><img src="assets/img/last.jpg" alt=""><div class="cap"><small>11.07.2026</small>Back then, I didn’t know this would be the last photo you would take of me. I was smiling toward the sun, never imagining that one day I would look at this picture and miss not only that moment… but the person behind the camera.</div></div>
+</section>
+<div class="wrap">
+  <div class="actions reveal bottom-nav-actions memories-bottom-actions">
+<a class="btn primary" href="index.html">Home</a>
+<a class="btn primary" href="letter.html">The Letter</a>
+<a class="btn ghost" href="memories.html" aria-current="page">Memories</a>
+<a class="btn primary" href="love-letter.html">The Love Letter</a>
+<a class="btn primary" href="for-us.html">For Us ✦</a>
+</div>
+</div>
+</main>
+<div class="lightbox"><button>×</button><img alt="Уголемен спомен"></div>
+<footer><div class="wrap foot"><div class="foot-sign">With love ♡</div><div class="foot-copy">Created by <span style="color:#8B1E2D;font-weight:700;">NdM Company ♥</span> · All rights reserved.</div></div></footer><script src="assets/app.js"></script>
+
+<audio id="memoriesMusic" loop preload="auto">
+  <source src="assets/love-theme.mp3" type="audio/mpeg">
+</audio>
+<script>
+(() => {
+  const audio = document.getElementById('memoriesMusic');
+  if (!audio) return;
+  audio.volume = 0.05;
+
+  const play = () => audio.play().catch(() => {});
+  play();
+
+  // Browsers may block audible autoplay; if so, start at the first user interaction.
+  const startOnInteraction = () => {
+    play();
+    window.removeEventListener('pointerdown', startOnInteraction);
+    window.removeEventListener('touchstart', startOnInteraction);
+    window.removeEventListener('keydown', startOnInteraction);
+  };
+  window.addEventListener('pointerdown', startOnInteraction, {passive:true});
+  window.addEventListener('touchstart', startOnInteraction, {passive:true});
+  window.addEventListener('keydown', startOnInteraction);
+})();
+</script>
+
+</body></html>

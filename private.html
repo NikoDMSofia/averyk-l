@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private · Our Account</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    :root{
+      --panel: rgba(255,255,255,.09);
+      --panel-strong: rgba(255,255,255,.14);
+      --line: rgba(255,255,255,.16);
+      --text-soft: rgba(255,255,255,.72);
+      --shadow: 0 24px 70px rgba(0,0,0,.28);
+    }
+
+    body{
+      min-height:100vh;
+    }
+
+    .private-shell{
+      width:min(1180px, calc(100% - 32px));
+      margin:0 auto;
+      padding:36px 0 64px;
+    }
+
+    .lock-screen{
+      min-height:72vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .lock-card{
+      width:min(460px,100%);
+      text-align:center;
+      padding:38px 28px;
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07));
+      backdrop-filter:blur(18px);
+      box-shadow:var(--shadow);
+    }
+
+    .lock-icon{
+      width:64px;
+      height:64px;
+      margin:0 auto 18px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:30px;
+      background:var(--panel-strong);
+      border:1px solid var(--line);
+    }
+
+    .lock-card h1{
+      margin:0 0 8px;
+      font-size:clamp(28px,5vw,42px);
+    }
+
+    .lock-card p{
+      margin:0;
+      color:var(--text-soft);
+    }
+
+    .pin-row{
+      display:flex;
+      gap:12px;
+      margin-top:26px;
+    }
+
+    .pin-input{
+      flex:1;
+      min-width:0;
+      padding:15px 16px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.1);
+      color:inherit;
+      font-size:20px;
+      letter-spacing:7px;
+      text-align:center;
+      outline:none;
+    }
+
+    .pin-input:focus{
+      border-color:rgba(255,255,255,.38);
+      box-shadow:0 0 0 4px rgba(255,255,255,.06);
+    }
+
+    .pin-message{
+      min-height:24px;
+      margin-top:12px;
+      font-size:14px;
+      color:#ffb8b8;
+    }
+
+    .account-view{
+      display:none;
+    }
+
+    .account-view.show{
+      display:block;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:26px;
+    }
+
+    .brand-block small{
+      display:block;
+      color:var(--text-soft);
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:6px;
+      font-size:12px;
+    }
+
+    .brand-block h1{
+      margin:0;
+      font-size:clamp(30px,5vw,52px);
+      letter-spacing:-.03em;
+    }
+
+    .lock-badge{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:var(--panel);
+      color:var(--text-soft);
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.45fr .75fr;
+      gap:20px;
+      margin-bottom:20px;
+    }
+
+    .balance-card,
+    .side-card,
+    .info-card,
+    .activity-card{
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.07));
+      backdrop-filter:blur(18px);
+      box-shadow:var(--shadow);
+    }
+
+    .balance-card{
+      padding:32px;
+      min-height:280px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .balance-card:after{
+      content:"";
+      position:absolute;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      right:-80px;
+      top:-90px;
+      background:rgba(255,255,255,.07);
+      filter:blur(2px);
+    }
+
+    .eyebrow{
+      color:var(--text-soft);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:12px;
+    }
+
+    .balance{
+      font-size:clamp(56px,9vw,92px);
+      font-weight:700;
+      letter-spacing:-.06em;
+      margin:12px 0 8px;
+      line-height:.95;
+    }
+
+    .balance-note{
+      color:var(--text-soft);
+      font-size:15px;
+    }
+
+    .owners{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:24px;
+    }
+
+    .owner-chip{
+      padding:10px 13px;
+      border-radius:999px;
+      background:rgba(255,255,255,.09);
+      border:1px solid var(--line);
+      font-size:14px;
+    }
+
+    .side-card{
+      padding:26px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:280px;
+    }
+
+    .side-card h3,
+    .info-card h3,
+    .activity-card h3{
+      margin:0 0 6px;
+    }
+
+    .muted{
+      color:var(--text-soft);
+    }
+
+    .goal{
+      margin-top:22px;
+    }
+
+    .goal-line{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+      font-size:14px;
+    }
+
+    .progress{
+      height:12px;
+      background:rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.07);
+    }
+
+    .progress > span{
+      display:block;
+      width:50%;
+      height:100%;
+      background:rgba(255,255,255,.72);
+      border-radius:inherit;
+    }
+
+    .mini-stat{
+      margin-top:22px;
+      padding-top:18px;
+      border-top:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+    }
+
+    .mini-stat strong{
+      display:block;
+      font-size:24px;
+      margin-top:4px;
+    }
+
+    .cards-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+      margin-bottom:20px;
+    }
+
+    .info-card{
+      padding:24px;
+    }
+
+    .info-value{
+      margin-top:16px;
+      font-size:26px;
+      font-weight:650;
+    }
+
+    .activity-card{
+      padding:26px;
+    }
+
+    .activity-row{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:14px;
+      align-items:center;
+      padding:16px 0;
+      border-top:1px solid var(--line);
+    }
+
+    .activity-icon{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.09);
+      border:1px solid var(--line);
+      font-size:20px;
+    }
+
+    .activity-title{
+      font-weight:600;
+      margin-bottom:4px;
+    }
+
+    .activity-date{
+      color:var(--text-soft);
+      font-size:13px;
+    }
+
+    .activity-amount{
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .account-footer{
+      margin-top:20px;
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      color:var(--text-soft);
+      font-size:13px;
+    }
+
+
+    .transaction-controls{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      margin-top:20px;
+      flex-wrap:wrap;
+    }
+
+    .amount-input{
+      flex:1 1 220px;
+      min-width:0;
+      padding:15px 16px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.10);
+      color:inherit;
+      font-size:18px;
+      outline:none;
+    }
+
+    .amount-input:focus{
+      border-color:rgba(255,255,255,.38);
+      box-shadow:0 0 0 4px rgba(255,255,255,.06);
+    }
+
+    .transaction-buttons{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .transaction-message{
+      min-height:24px;
+      margin-top:12px;
+      font-size:14px;
+      color:var(--text-soft);
+    }
+
+
+    .money-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:22px 0 8px;
+    }
+
+    .withdraw-action{
+      background:rgba(255,90,90,.12) !important;
+      border-color:rgba(255,110,110,.28) !important;
+    }
+
+    .transactions-list{
+      margin-top:18px;
+    }
+
+    .transaction-entry{
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:14px;
+      align-items:center;
+      padding:17px 0;
+      border-top:1px solid var(--line);
+    }
+
+    .transaction-entry:first-child{
+      border-top:1px solid var(--line);
+    }
+
+    .transaction-entry.withdrawal{
+      color:#ff8f8f;
+    }
+
+    .transaction-entry.withdrawal .transaction-icon{
+      background:rgba(255,90,90,.10);
+      border-color:rgba(255,100,100,.24);
+    }
+
+    .transaction-icon{
+      width:46px;
+      height:46px;
+      border-radius:15px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.09);
+      border:1px solid var(--line);
+      font-size:20px;
+    }
+
+    .transaction-person{
+      font-weight:650;
+      margin-bottom:4px;
+    }
+
+    .transaction-meta{
+      font-size:13px;
+      color:var(--text-soft);
+    }
+
+    .transaction-entry.withdrawal .transaction-meta{
+      color:rgba(255,160,160,.78);
+    }
+
+    .transaction-value{
+      font-weight:750;
+      white-space:nowrap;
+      font-size:16px;
+    }
+
+    .empty-transactions{
+      color:var(--text-soft);
+      padding:20px 0 4px;
+      display:none;
+    }
+
+    .money-modal{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .money-modal.show{
+      display:flex;
+    }
+
+    .money-modal-backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.62);
+      backdrop-filter:blur(8px);
+    }
+
+    .money-modal-card{
+      position:relative;
+      z-index:1;
+      width:min(510px,100%);
+      border-radius:28px;
+      border:1px solid var(--line);
+      background:rgba(24,24,28,.96);
+      box-shadow:0 28px 90px rgba(0,0,0,.5);
+      padding:30px;
+    }
+
+    .money-modal-card h2{
+      margin:6px 0 8px;
+      font-size:32px;
+    }
+
+    .modal-close{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.08);
+      color:inherit;
+      font-size:24px;
+      cursor:pointer;
+    }
+
+    .form-label{
+      display:block;
+      margin:18px 0 8px;
+      font-size:13px;
+      color:var(--text-soft);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .form-input{
+      width:100%;
+      box-sizing:border-box;
+      padding:14px 15px;
+      border-radius:15px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.08);
+      color:inherit;
+      font-size:17px;
+      outline:none;
+    }
+
+    .form-input:focus{
+      border-color:rgba(255,255,255,.4);
+      box-shadow:0 0 0 4px rgba(255,255,255,.05);
+    }
+
+    .amount-field{
+      position:relative;
+    }
+
+    .amount-field > span{
+      position:absolute;
+      left:15px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:18px;
+      color:var(--text-soft);
+      pointer-events:none;
+    }
+
+    .amount-modal-input{
+      padding-left:38px;
+    }
+
+    .modal-error{
+      min-height:22px;
+      margin-top:12px;
+      color:#ff9999;
+      font-size:14px;
+    }
+
+    .modal-confirm{
+      width:100%;
+      margin-top:8px;
+    }
+
+    @media (max-width: 560px){
+      .money-modal-card{
+        padding:25px 20px;
+      }
+
+      .transaction-entry{
+        grid-template-columns:auto 1fr;
+      }
+
+      .transaction-value{
+        grid-column:2;
+      }
+    }
+
+
+    .email-status-card{
+      margin-top:20px;
+    }
+
+    .email-status-line{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+
+    .email-status-title{
+      margin-top:8px;
+    }
+
+    .email-badge{
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .email-badge.ready{
+      background:rgba(110,255,165,.09);
+      border-color:rgba(110,255,165,.22);
+    }
+
+    .email-badge.pending{
+      background:rgba(255,210,110,.08);
+      border-color:rgba(255,210,110,.22);
+    }
+
+
+    .email-toast{
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      z-index:9999;
+      max-width:min(360px, calc(100vw - 40px));
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(18,18,22,.96);
+      backdrop-filter:blur(16px);
+      box-shadow:0 12px 40px rgba(0,0,0,.28);
+      opacity:0;
+      transform:translateY(10px);
+      pointer-events:none;
+      transition:opacity .2s ease, transform .2s ease;
+      font-size:13px;
+      line-height:1.45;
+    }
+    .email-toast.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .email-toast.success{
+      border-color:rgba(110,255,165,.3);
+    }
+    .email-toast.error{
+      border-color:rgba(255,110,110,.32);
+    }
+
+
+    .transaction-date-inline{
+      margin-top:4px;
+      font-size:12px;
+      opacity:.72;
+    }
+
+
+    .pin-expired-message{
+      margin:0 0 12px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,190,110,.28);
+      background:rgba(255,190,110,.08);
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    @media (max-width: 820px){
+      .hero-grid,
+      .cards-grid{
+        grid-template-columns:1fr;
+      }
+
+      .pin-row{
+        flex-direction:column;
+      }
+
+      .topbar{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+    }
+  
+    /* Banking blue theme — calm, trustworthy, professional */
+    :root{
+      --bank-navy:#071A33;
+      --bank-blue:#0B2F5B;
+      --bank-blue-soft:#123F73;
+      --bank-panel:rgba(10,38,72,.86);
+      --bank-panel-soft:rgba(17,54,96,.72);
+      --bank-line:rgba(174,207,240,.18);
+      --bank-text:#F4F8FC;
+      --bank-muted:#AFC4D9;
+    }
+
+    html, body{
+      background:
+        radial-gradient(circle at 18% 0%, rgba(40,101,165,.30), transparent 34%),
+        radial-gradient(circle at 90% 18%, rgba(18,72,126,.22), transparent 30%),
+        linear-gradient(145deg, var(--bank-navy) 0%, var(--bank-blue) 55%, #082542 100%) !important;
+      background-attachment:fixed !important;
+      color:var(--bank-text);
+    }
+
+    .private-shell,
+    .account-shell,
+    .private-card,
+    .account-card,
+    .balance-card,
+    .info-card,
+    .transaction-card,
+    .transaction-item,
+    .modal-card{
+      border-color:var(--bank-line) !important;
+    }
+
+    .account-card,
+    .private-card,
+    .modal-card{
+      background:linear-gradient(145deg, rgba(8,31,60,.94), rgba(13,49,89,.90)) !important;
+      box-shadow:0 22px 70px rgba(0,10,28,.34) !important;
+    }
+
+    .balance-card,
+    .info-card,
+    .transaction-card,
+    .transaction-item{
+      background:var(--bank-panel-soft) !important;
+    }
+
+    .muted,
+    .eyebrow,
+    .transaction-date-inline{
+      color:var(--bank-muted) !important;
+    }
+
+    input,
+    select{
+      background:rgba(5,25,50,.72) !important;
+      border-color:rgba(174,207,240,.22) !important;
+      color:var(--bank-text) !important;
+    }
+
+  
+    /* Clear active-status indicator */
+    .status-active,
+    .active-status,
+    .status-value.active,
+    [data-status="active"]{
+      color:#63E6A3 !important;
+      font-weight:700 !important;
+    }
+
+  
+    /* Exact Status → Active indicator */
+    .status-active-final{
+      color:#39E58C !important;
+      font-weight:800 !important;
+      text-shadow:0 0 14px rgba(57,229,140,.20);
+    }
+
+  
+    .motivation-overlay{
+      position:fixed;
+      inset:0;
+      z-index:10050;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:rgba(2,14,31,.55);
+      backdrop-filter:blur(7px);
+    }
+    .motivation-overlay[hidden]{
+      display:none !important;
+    }
+    .motivation-box{
+      position:relative;
+      width:min(430px, 100%);
+      padding:30px 28px 28px;
+      border-radius:22px;
+      border:1px solid rgba(151,205,255,.22);
+      background:linear-gradient(145deg, rgba(8,35,68,.98), rgba(13,61,108,.98));
+      box-shadow:0 24px 80px rgba(0,10,28,.45);
+      text-align:center;
+    }
+    .motivation-close{
+      position:absolute;
+      top:10px;
+      right:12px;
+      width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      padding:0;
+      border:0;
+      border-radius:50%;
+      background:transparent;
+      color:#dcecff;
+      font-size:27px;
+      line-height:1;
+      cursor:pointer;
+      opacity:.82;
+    }
+    .motivation-close:hover{
+      background:rgba(255,255,255,.08);
+      opacity:1;
+    }
+    .motivation-icon{
+      font-size:34px;
+      margin-bottom:9px;
+    }
+    .motivation-title{
+      font-size:24px;
+      font-weight:800;
+      color:#63E6A3;
+      margin-bottom:8px;
+    }
+    .motivation-text{
+      color:#f2f7fc;
+      font-size:15px;
+      line-height:1.65;
+    }
+
+  
+    .withdraw-notice-overlay{
+      position:fixed;
+      inset:0;
+      z-index:10060;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:rgba(20,5,10,.58);
+      backdrop-filter:blur(7px);
+    }
+    .withdraw-notice-overlay[hidden]{
+      display:none !important;
+    }
+    .withdraw-notice-box{
+      position:relative;
+      width:min(450px, 100%);
+      padding:30px 28px 28px;
+      border-radius:22px;
+      border:1px solid rgba(255,135,145,.24);
+      background:linear-gradient(145deg, rgba(65,14,25,.98), rgba(104,25,38,.97));
+      box-shadow:0 24px 80px rgba(18,0,5,.48);
+      text-align:center;
+    }
+    .withdraw-notice-close{
+      position:absolute;
+      top:10px;
+      right:12px;
+      width:34px;
+      height:34px;
+      display:grid;
+      place-items:center;
+      padding:0;
+      border:0;
+      border-radius:50%;
+      background:transparent;
+      color:#ffe8eb;
+      font-size:27px;
+      line-height:1;
+      cursor:pointer;
+      opacity:.84;
+    }
+    .withdraw-notice-close:hover{
+      background:rgba(255,255,255,.08);
+      opacity:1;
+    }
+    .withdraw-notice-icon{
+      font-size:34px;
+      margin-bottom:9px;
+    }
+    .withdraw-notice-title{
+      font-size:23px;
+      font-weight:800;
+      color:#ff9ca7;
+      margin-bottom:10px;
+    }
+    .withdraw-notice-text{
+      color:#fff1f3;
+      font-size:15px;
+      line-height:1.68;
+    }
+    .withdraw-notice-text strong{
+      color:#ffffff;
+      font-weight:800;
+    }
+
+  
+    /* Hard privacy lock: never reveal account content while PIN is required */
+    html.private-locked body{
+      overflow:hidden !important;
+    }
+
+    html.private-locked .private-shell,
+    html.private-locked .account-shell,
+    html.private-locked .private-content,
+    html.private-locked .account-content,
+    html.private-locked #privateContent,
+    html.private-locked #accountContent{
+      display:none !important;
+      visibility:hidden !important;
+      opacity:0 !important;
+      pointer-events:none !important;
+      user-select:none !important;
+    }
+
+    html.private-locked .pin-gate,
+    html.private-locked .lock-screen,
+    html.private-locked #pinGate,
+    html.private-locked #lockScreen{
+      display:flex !important;
+      visibility:visible !important;
+      opacity:1 !important;
+      position:fixed !important;
+      inset:0 !important;
+      z-index:2147483647 !important;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(40,101,165,.28), transparent 34%),
+        linear-gradient(145deg, #071A33 0%, #0B2F5B 58%, #082542 100%) !important;
+    }
+/* Definitive PIN lock visibility rules */
+    html.private-locked body{
+      overflow:hidden !important;
+    }
+
+    html.private-locked .private-shell,
+    html.private-locked .account-shell,
+    html.private-locked .account-card,
+    html.private-locked .private-card,
+    html.private-locked #privateContent,
+    html.private-locked #accountContent{
+      display:none !important;
+      visibility:hidden !important;
+      opacity:0 !important;
+      pointer-events:none !important;
+      user-select:none !important;
+    }
+
+    html.private-locked #pinGate,
+    html.private-locked #lockScreen,
+    html.private-locked .pin-gate,
+    html.private-locked .lock-screen{
+      display:flex !important;
+      visibility:visible !important;
+      opacity:1 !important;
+      pointer-events:auto !important;
+      position:fixed !important;
+      inset:0 !important;
+      z-index:2147483647 !important;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(40,101,165,.28), transparent 34%),
+        linear-gradient(145deg, #071A33 0%, #0B2F5B 58%, #082542 100%) !important;
+    }
+
+  
+    /* Mobile-safe PIN gate: always visible when locked */
+    html.private-locked #pinGate,
+    html.private-locked #lockScreen,
+    html.private-locked .pin-gate,
+    html.private-locked .lock-screen{
+      display:flex !important;
+      align-items:center !important;
+      justify-content:center !important;
+      min-height:100dvh !important;
+      width:100% !important;
+      visibility:visible !important;
+      opacity:1 !important;
+      pointer-events:auto !important;
+      position:fixed !important;
+      inset:0 !important;
+      z-index:2147483647 !important;
+    }
+.delete-history-cancel{background:rgba(255,255,255,.10);color:#fff;}
+    .delete-history-confirm{background:#b6283f;color:#fff;}
+
+
+    .transaction-delete-btn{
+      margin-left:auto;
+      border:1px solid rgba(255,120,130,.28);
+      background:rgba(130,20,35,.15);
+      color:#ffb2bb;
+      border-radius:8px;
+      padding:6px 9px;
+      font-size:11px;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+    .transaction-delete-btn:hover{
+      color:#fff;
+      background:rgba(150,25,42,.25);
+    }
+
+    .delete-transaction-overlay{
+      position:fixed;
+      inset:0;
+      z-index:10090;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:rgba(10,8,14,.74);
+      backdrop-filter:blur(8px);
+    }
+    .delete-transaction-overlay[hidden]{display:none!important;}
+    .delete-transaction-box{
+      position:relative;
+      width:min(500px,100%);
+      border-radius:22px;
+      border:1px solid rgba(255,130,140,.24);
+      padding:30px 26px 26px;
+      background:linear-gradient(145deg,rgba(58,14,24,.99),rgba(93,22,35,.98));
+      box-shadow:0 28px 90px rgba(0,0,0,.46);
+      color:#fff;
+    }
+    .delete-transaction-close{
+      position:absolute;
+      top:10px;
+      right:12px;
+      width:34px;
+      height:34px;
+      border:0;
+      border-radius:50%;
+      background:transparent;
+      color:#ffe8eb;
+      font-size:27px;
+      line-height:1;
+      cursor:pointer;
+    }
+    .delete-transaction-icon{text-align:center;font-size:34px;margin-bottom:8px;}
+    .delete-transaction-title{text-align:center;font-size:23px;font-weight:800;color:#ff9ca7;margin-bottom:8px;}
+    .delete-transaction-summary{
+      margin:0 0 18px;
+      text-align:center;
+      color:#ffd9de;
+      line-height:1.55;
+      font-size:14px;
+    }
+    .delete-transaction-form{display:grid;gap:14px;}
+    .delete-transaction-form label{display:grid;gap:7px;font-size:13px;color:#ffe5e8;}
+    .delete-transaction-form input,.delete-transaction-form textarea{
+      width:100%;
+      box-sizing:border-box;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:11px;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      padding:11px 12px;
+      font:inherit;
+      outline:none;
+    }
+    .delete-transaction-form textarea{resize:vertical;min-height:95px;}
+    .delete-transaction-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:4px;}
+    .delete-transaction-cancel,.delete-transaction-confirm{
+      border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700;
+    }
+    .delete-transaction-cancel{background:rgba(255,255,255,.10);color:#fff;}
+    .delete-transaction-confirm{background:#b6283f;color:#fff;}
+
+
+    /* Clean shared-ledger controls */
+    .withdraw-action{
+      color:#8b2437 !important;
+      font-weight:800 !important;
+      background:rgba(255,90,110,.13) !important;
+      border-color:rgba(190,45,65,.25) !important;
+    }
+    .transaction-entry{
+      grid-template-columns:auto minmax(0,1fr) auto auto;
+    }
+    .transaction-details{min-width:0;}
+    .transaction-delete-btn{
+      border:1px solid rgba(190,45,65,.28);
+      background:rgba(190,45,65,.10);
+      color:#a62239;
+      border-radius:9px;
+      padding:7px 10px;
+      font-size:11px;
+      font-weight:800;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .transaction-delete-btn:hover{
+      background:rgba(190,45,65,.18);
+    }
+    @media (max-width:560px){
+      .money-actions{
+        display:grid !important;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+      .money-actions .btn{
+        width:100%;
+        min-width:0;
+        padding-left:12px;
+        padding-right:12px;
+        font-size:13px;
+      }
+      .transaction-entry{
+        grid-template-columns:auto minmax(0,1fr) auto;
+        gap:10px;
+      }
+      .transaction-value{
+        grid-column:2;
+        justify-self:start;
+      }
+      .transaction-delete-btn{
+        grid-column:3;
+        grid-row:1 / span 2;
+        align-self:center;
+      }
+    }
+
+  </style>
+
+  </head>
+<body>
+  <header>
+    <nav class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="letter.html">The Letter</a>
+      <a href="memories.html">Memories</a>
+      <a href="love-letter.html">The Love Letter</a>
+      <a href="for-us.html">For Us ✦</a>
+      <a class="active" href="private.html">🔒 Private</a>
+    </nav>
+  </header>
+
+  <main class="private-shell">
+    <section id="lockView" class="lock-screen">
+      <div class="lock-card">
+        <div class="lock-icon">🔒</div>
+        <h1>Private</h1>
+        <p>Enter the 6-digit PIN to open your shared account.</p>
+
+        <div class="pin-row">
+          <input id="pinInput" class="pin-input" type="password" inputmode="numeric" maxlength="6" autocomplete="off" aria-label="6 digit PIN">
+          <button id="unlockBtn" class="btn primary" type="button">Unlock</button>
+        </div>
+        <div id="pinMessage" class="pin-message" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section id="accountView" class="account-view">
+      <div class="topbar">
+        <div class="brand-block">
+          <small>Private shared space</small>
+          <h1>Our Account</h1>
+        </div>
+        <div class="lock-badge">🔐 Niki & Avery</div>
+      </div>
+
+      <div class="hero-grid">
+        <article class="balance-card">
+          <div>
+            <div class="eyebrow">Current shared balance</div>
+            <div class="balance" id="mainBalance">€500.00</div>
+            <div class="balance-note">Saved together so far</div>
+          </div>
+
+          <div class="owners">
+            <span class="owner-chip">Niki</span>
+            <span class="owner-chip">Avery</span>
+            <span class="owner-chip">Shared account</span>
+          </div>
+        </article>
+
+        <article class="side-card">
+          <div>
+            <div class="eyebrow">Savings progress</div>
+            <h3>Our shared fund</h3>
+            <p class="muted">A private place to track what we are building together.</p>
+
+            <div class="goal">
+              <div class="goal-line">
+                <span>Saved</span>
+                <strong id="savedBalance">€500.00</strong>
+              </div>
+              <div class="progress"><span></span></div>
+            </div>
+          </div>
+
+          <div class="mini-stat">
+            <div>
+              <span class="muted">Currency</span>
+              <strong>EUR</strong>
+            </div>
+            <div>
+              <span class="muted">Status</span>
+              <strong class="status-active-final">Active</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="cards-grid">
+        <article class="info-card">
+          <div class="eyebrow">Account type</div>
+          <div class="info-value">Joint Savings</div>
+          <p class="muted">A shared space for our plans and future.</p>
+        </article>
+
+        <article class="info-card">
+          <div class="eyebrow">Owners</div>
+          <div class="info-value">Niki & Avery</div>
+          <p class="muted">Private access for the two of us.</p>
+        </article>
+
+        <article class="info-card">
+          <div class="eyebrow">Balance</div>
+          <div class="info-value" id="cardBalance">€500.00</div>
+          <p class="muted">Current amount saved together.</p>
+        </article>
+      </div>
+
+      <article class="activity-card">
+        <div class="eyebrow">Account activity</div>
+        <h3>Transaction history</h3>
+        <p class="muted">Every deposit and withdrawal is recorded here.</p>
+
+        <div class="money-actions">
+          <button id="openAddModal" class="btn primary" type="button">Add Money</button>
+          <button id="openWithdrawModal" class="btn primary withdraw-action" type="button">Withdraw Money</button>
+        </div>
+
+        <div id="transactionsList" class="transactions-list"></div>
+        <div id="emptyTransactions" class="empty-transactions">No transactions yet.</div>
+      </article>
+<div class="account-footer">
+        <span>Private shared dashboard</span>
+        <span>Protected by PIN</span>
+      </div>
+    </section>
+</main>
+
+  <div id="moneyModal" class="money-modal" aria-hidden="true">
+    <div class="money-modal-backdrop" data-close-modal></div>
+    <section class="money-modal-card" role="dialog" aria-modal="true" aria-labelledby="moneyModalTitle">
+      <button class="modal-close" type="button" aria-label="Close" data-close-modal>×</button>
+      <div class="eyebrow" id="moneyModalEyebrow">Transaction</div>
+      <h2 id="moneyModalTitle">Add Money</h2>
+      <p class="muted" id="moneyModalDescription">Enter the transaction details.</p>
+
+      <form id="moneyForm">
+        <label class="form-label" for="personName">Name</label>
+        <input id="personName" class="form-input" type="text" maxlength="60" placeholder="Who is making the transaction?" required>
+
+        <label class="form-label" for="moneyAmount">Amount</label>
+        <div class="amount-field">
+          <span>€</span>
+          <input id="moneyAmount" class="form-input amount-modal-input" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required>
+        </div>
+
+        <label class="form-label" for="transactionDate">Date</label>
+        <input id="transactionDate" class="form-input" type="date" required>
+
+        <div id="modalError" class="modal-error" aria-live="polite"></div>
+
+        <button id="confirmMoneyBtn" class="btn primary modal-confirm" type="submit">Add Money</button>
+      </form>
+    </section>
+  </div>
+
+
+  <div id="emailToast" class="email-toast" role="status" aria-live="polite"></div>
+
+<div id="sessionExpiredMessage" class="pin-expired-message" hidden>Session expired. Please enter the PIN again.</div>
+
+  <div id="motivationOverlay" class="motivation-overlay" hidden>
+    <div class="motivation-box" role="dialog" aria-modal="true" aria-labelledby="motivationTitle">
+      <button id="motivationClose" class="motivation-close" type="button" aria-label="Close">×</button>
+      <div class="motivation-icon">🎯</div>
+      <div id="motivationTitle" class="motivation-title">Браво!</div>
+      <div class="motivation-text">Още една крачка по-близо до нашата цел.<br>Продължаваме напред заедно. 💙</div>
+    </div>
+  </div>
+
+
+  <div id="withdrawNoticeOverlay" class="withdraw-notice-overlay" hidden>
+    <div class="withdraw-notice-box" role="dialog" aria-modal="true" aria-labelledby="withdrawNoticeTitle">
+      <button id="withdrawNoticeClose" class="withdraw-notice-close" type="button" aria-label="Close">×</button>
+      <div class="withdraw-notice-icon">⚠️</div>
+      <div id="withdrawNoticeTitle" class="withdraw-notice-title">Крачка назад от целта</div>
+      <div class="withdraw-notice-text">
+        <strong id="withdrawNoticeName"></strong> изтегли <strong id="withdrawNoticeAmount"></strong> от общата сметка.<br>
+        Понякога е необходимо — просто нека не забравяме накъде сме тръгнали. 💙
+      </div>
+    </div>
+  </div>
+
+  <div id="deleteTransactionOverlay" class="delete-transaction-overlay" hidden>
+    <div class="delete-transaction-box" role="dialog" aria-modal="true" aria-labelledby="deleteTransactionTitle">
+      <button id="deleteTransactionClose" class="delete-transaction-close" type="button" aria-label="Close">×</button>
+      <div class="delete-transaction-icon">⚠️</div>
+      <div id="deleteTransactionTitle" class="delete-transaction-title">Delete Transaction</div>
+      <p id="deleteTransactionSummary" class="delete-transaction-summary"></p>
+
+      <form id="deleteTransactionForm" class="delete-transaction-form">
+        <label>
+          Name
+          <input id="deleteTransactionName" type="text" required placeholder="Who is deleting this transaction?">
+        </label>
+
+        <label>
+          Reason
+          <textarea id="deleteTransactionReason" required minlength="5" rows="4"
+            placeholder="Explain why this transaction should be deleted."></textarea>
+        </label>
+
+        <div class="delete-transaction-actions">
+          <button id="deleteTransactionCancel" class="delete-transaction-cancel" type="button">Cancel</button>
+          <button class="delete-transaction-confirm" type="submit">Delete Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  "use strict";
+
+  const PIN = "248624";
+  const SESSION_LIMIT_MS = 2 * 60 * 1000;
+
+  const SUPABASE_URL = "https://rmwivkbsyelztrllxoed.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8wESBdceigGNxLODM5jT_w_dLF8eUo9";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  const FORMSPREE_FORM_ID = "myeyyzvg";
+  const NOTIFICATION_EMAIL = "minkov_n@icloud.com";
+
+  const $ = (id) => document.getElementById(id);
+
+  const lockView = $("lockView");
+  const accountView = $("accountView");
+  const pinInput = $("pinInput");
+  const unlockBtn = $("unlockBtn");
+  const pinMessage = $("pinMessage");
+  const sessionExpiredMessage = $("sessionExpiredMessage");
+
+  const mainBalance = $("mainBalance");
+  const savedBalance = $("savedBalance");
+  const cardBalance = $("cardBalance");
+  const activityBalance = $("activityBalance");
+
+  const openAddModal = $("openAddModal");
+  const openWithdrawModal = $("openWithdrawModal");
+  const moneyModal = $("moneyModal");
+  const moneyForm = $("moneyForm");
+  const moneyModalTitle = $("moneyModalTitle");
+  const moneyModalDescription = $("moneyModalDescription");
+  const personName = $("personName");
+  const moneyAmount = $("moneyAmount");
+  const transactionDate = $("transactionDate");
+  const confirmMoneyBtn = $("confirmMoneyBtn");
+  const modalError = $("modalError");
+
+  const transactionsList = $("transactionsList");
+  const emptyTransactions = $("emptyTransactions");
+  const emailToast = $("emailToast");
+
+  const motivationOverlay = $("motivationOverlay");
+  const motivationClose = $("motivationClose");
+
+  const withdrawNoticeOverlay = $("withdrawNoticeOverlay");
+  const withdrawNoticeClose = $("withdrawNoticeClose");
+  const withdrawNoticeName = $("withdrawNoticeName");
+  const withdrawNoticeAmount = $("withdrawNoticeAmount");
+
+  const deleteTransactionOverlay = $("deleteTransactionOverlay");
+  const deleteTransactionClose = $("deleteTransactionClose");
+  const deleteTransactionCancel = $("deleteTransactionCancel");
+  const deleteTransactionForm = $("deleteTransactionForm");
+  const deleteTransactionName = $("deleteTransactionName");
+  const deleteTransactionReason = $("deleteTransactionReason");
+  const deleteTransactionSummary = $("deleteTransactionSummary");
+
+  let transactions = [];
+  let balance = 0;
+  let transactionType = "deposit";
+  let sessionTimer = null;
+  let deleteTransactionId = null;
+  let refreshInProgress = null;
+  let unlocked = false;
+
+  function formatEUR(value){
+    return "€" + Number(value || 0).toFixed(2);
+  }
+
+  function formatDate(dateStr){
+    const parts = String(dateStr || "").split("-");
+    return parts.length === 3
+      ? `${parts[2]}.${parts[1]}.${parts[0]}`
+      : String(dateStr || "");
+  }
+
+  function localToday(){
+    const now = new Date();
+    return [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0")
+    ].join("-");
+  }
+
+  function calculateBalance(rows){
+    return rows.reduce((sum, tx) => {
+      const amount = Number(tx.amount || 0);
+      return sum + (tx.type === "withdrawal" ? -amount : amount);
+    }, 0);
+  }
+
+  function setLockedUI(expired = false){
+    unlocked = false;
+    clearTimeout(sessionTimer);
+    sessionTimer = null;
+
+    sessionStorage.removeItem("privateUnlocked");
+    sessionStorage.removeItem("privateSessionStartedAt");
+
+    if(accountView){
+      accountView.classList.remove("show");
+      accountView.style.display = "none";
+      accountView.style.visibility = "hidden";
+      accountView.style.pointerEvents = "none";
+      accountView.setAttribute("aria-hidden", "true");
+      try { accountView.inert = true; } catch (_) {}
+    }
+
+    if(lockView){
+      lockView.style.display = "flex";
+      lockView.style.visibility = "visible";
+      lockView.style.opacity = "1";
+      lockView.style.pointerEvents = "auto";
+      lockView.setAttribute("aria-hidden", "false");
+      try { lockView.inert = false; } catch (_) {}
+    }
+
+    if(sessionExpiredMessage){
+      sessionExpiredMessage.hidden = !expired;
+    }
+
+    closeMoneyModal();
+    hideMotivation();
+    hideWithdrawNotice();
+    closeDeleteModal();
+
+    if(pinInput){
+      pinInput.value = "";
+      setTimeout(() => {
+        try { pinInput.focus({preventScroll:true}); }
+        catch (_) { pinInput.focus(); }
+      }, 80);
+    }
+  }
+
+  function setUnlockedUI(){
+    unlocked = true;
+    sessionStorage.setItem("privateUnlocked", "true");
+    sessionStorage.setItem("privateSessionStartedAt", String(Date.now()));
+
+    if(lockView){
+      lockView.style.display = "none";
+      lockView.style.visibility = "hidden";
+      lockView.style.pointerEvents = "none";
+      lockView.setAttribute("aria-hidden", "true");
+    }
+
+    if(accountView){
+      accountView.style.display = "";
+      accountView.style.visibility = "visible";
+      accountView.style.pointerEvents = "auto";
+      accountView.removeAttribute("aria-hidden");
+      accountView.classList.add("show");
+      try { accountView.inert = false; } catch (_) {}
+    }
+
+    if(sessionExpiredMessage) sessionExpiredMessage.hidden = true;
+
+    clearTimeout(sessionTimer);
+    sessionTimer = setTimeout(() => {
+      setLockedUI(true);
+      if(pinMessage) pinMessage.textContent = "Session expired. Please enter the PIN again.";
+    }, SESSION_LIMIT_MS);
+
+    refreshFromSupabase();
+  }
+
+  function unlock(){
+    if(!pinInput) return;
+    if(pinInput.value === PIN){
+      if(pinMessage) pinMessage.textContent = "";
+      setUnlockedUI();
+    }else{
+      if(pinMessage) pinMessage.textContent = "Incorrect PIN.";
+      pinInput.value = "";
+      pinInput.focus();
+    }
+  }
+
+  function renderBalance(){
+    [mainBalance, savedBalance, cardBalance, activityBalance].forEach((el) => {
+      if(el) el.textContent = formatEUR(balance);
+    });
+  }
+
+  function renderTransactions(){
+    if(!transactionsList || !emptyTransactions) return;
+
+    transactionsList.innerHTML = "";
+
+    if(!transactions.length){
+      emptyTransactions.style.display = "block";
+      return;
+    }
+
+    emptyTransactions.style.display = "none";
+
+    transactions.slice().reverse().forEach((tx) => {
+      const row = document.createElement("div");
+      row.className = "transaction-entry" + (tx.type === "withdrawal" ? " withdrawal" : "");
+
+      const icon = document.createElement("div");
+      icon.className = "transaction-icon";
+      icon.textContent = tx.type === "withdrawal" ? "↘" : "↗";
+
+      const details = document.createElement("div");
+      details.className = "transaction-details";
+
+      const person = document.createElement("div");
+      person.className = "transaction-person";
+      person.textContent = tx.name;
+
+      const meta = document.createElement("div");
+      meta.className = "transaction-meta";
+      meta.textContent =
+        (tx.type === "withdrawal" ? "Withdrawal" : "Deposit") +
+        " · " + formatDate(tx.date);
+
+      details.append(person, meta);
+
+      const value = document.createElement("div");
+      value.className = "transaction-value";
+      value.textContent =
+        (tx.type === "withdrawal" ? "−" : "+") + formatEUR(tx.amount);
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "transaction-delete-btn";
+      del.textContent = "Delete";
+      del.setAttribute("aria-label", "Delete transaction");
+      del.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openDeleteModal(tx.id);
+      });
+
+      row.append(icon, details, value, del);
+      transactionsList.appendChild(row);
+    });
+  }
+
+  async function refreshFromSupabase(){
+    if(refreshInProgress) return refreshInProgress;
+
+    refreshInProgress = (async () => {
+      try{
+        const {data, error} = await db
+          .from("transactions")
+          .select("id,name,type,amount,transaction_date,created_at")
+          .order("transaction_date", {ascending:true})
+          .order("id", {ascending:true});
+
+        if(error) throw error;
+
+        transactions = (data || []).map((row) => ({
+          id: row.id,
+          name: row.name,
+          type: row.type,
+          amount: Number(row.amount),
+          date: row.transaction_date,
+          created_at: row.created_at
+        }));
+
+        balance = calculateBalance(transactions);
+        renderBalance();
+        renderTransactions();
+      }catch(error){
+        console.error("Supabase refresh failed:", error);
+        showToast("Could not load the shared account.", "error");
+      }finally{
+        refreshInProgress = null;
+      }
+    })();
+
+    return refreshInProgress;
+  }
+
+  async function insertTransaction(tx){
+    const {error} = await db.from("transactions").insert({
+      name: tx.name,
+      type: tx.type,
+      amount: Number(tx.amount),
+      transaction_date: tx.date
+    });
+
+    if(error) throw error;
+  }
+
+  async function removeTransaction(id){
+    const {error} = await db.from("transactions").delete().eq("id", id);
+    if(error) throw error;
+  }
+
+  function showToast(message, type){
+    if(!emailToast) return;
+    emailToast.textContent = message;
+    emailToast.classList.remove("success", "error", "show");
+    emailToast.classList.add(type === "success" ? "success" : "error");
+    requestAnimationFrame(() => emailToast.classList.add("show"));
+    clearTimeout(window.__sharedToastTimer);
+    window.__sharedToastTimer = setTimeout(() => {
+      emailToast.classList.remove("show");
+    }, 4200);
+  }
+
+  async function sendTransactionEmail(tx, newBalance){
+    try{
+      const typeLabel = tx.type === "withdrawal" ? "Withdraw Money" : "Add Money";
+      const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Accept":"application/json"
+        },
+        body:JSON.stringify({
+          subject:`Our Account – ${typeLabel}`,
+          notification_destination:NOTIFICATION_EMAIL,
+          transaction:typeLabel,
+          name:tx.name,
+          amount:formatEUR(tx.amount),
+          date:formatDate(tx.date),
+          new_balance:formatEUR(newBalance),
+          message:
+            `${tx.name} ${tx.type === "withdrawal" ? "withdrew" : "added"} ` +
+            `${formatEUR(tx.amount)} on ${formatDate(tx.date)}. ` +
+            `New balance: ${formatEUR(newBalance)}.`
+        })
+      });
+      return response.ok;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function openMoneyModal(type){
+    transactionType = type;
+    if(moneyForm) moneyForm.reset();
+    if(modalError) modalError.textContent = "";
+    if(transactionDate) transactionDate.value = localToday();
+
+    if(type === "withdrawal"){
+      if(moneyModalTitle) moneyModalTitle.textContent = "Withdraw Money";
+      if(moneyModalDescription) moneyModalDescription.textContent =
+        "Enter who is withdrawing the money, the amount, and the date.";
+      if(confirmMoneyBtn) confirmMoneyBtn.textContent = "Withdraw Money";
+    }else{
+      if(moneyModalTitle) moneyModalTitle.textContent = "Add Money";
+      if(moneyModalDescription) moneyModalDescription.textContent =
+        "Enter who is adding the money, the amount, and the date.";
+      if(confirmMoneyBtn) confirmMoneyBtn.textContent = "Add Money";
+    }
+
+    if(moneyModal){
+      moneyModal.classList.add("show");
+      moneyModal.setAttribute("aria-hidden", "false");
+    }
+    setTimeout(() => personName && personName.focus(), 60);
+  }
+
+  function closeMoneyModal(){
+    if(!moneyModal) return;
+    moneyModal.classList.remove("show");
+    moneyModal.setAttribute("aria-hidden", "true");
+  }
+
+  function showMotivation(){
+    if(motivationOverlay) motivationOverlay.hidden = false;
+  }
+  function hideMotivation(){
+    if(motivationOverlay) motivationOverlay.hidden = true;
+  }
+
+  function showWithdrawNotice(name, amount){
+    if(withdrawNoticeName) withdrawNoticeName.textContent = name;
+    if(withdrawNoticeAmount) withdrawNoticeAmount.textContent = formatEUR(amount);
+    if(withdrawNoticeOverlay) withdrawNoticeOverlay.hidden = false;
+  }
+  function hideWithdrawNotice(){
+    if(withdrawNoticeOverlay) withdrawNoticeOverlay.hidden = true;
+  }
+
+  function findTransaction(id){
+    return transactions.find((tx) => String(tx.id) === String(id)) || null;
+  }
+
+  function openDeleteModal(id){
+    const tx = findTransaction(id);
+    if(!tx || !deleteTransactionOverlay) return;
+
+    deleteTransactionId = tx.id;
+    const sign = tx.type === "withdrawal" ? "−" : "+";
+
+    if(deleteTransactionSummary){
+      deleteTransactionSummary.textContent =
+        `${tx.name} ${sign}${formatEUR(tx.amount)} — ${formatDate(tx.date)}`;
+    }
+    if(deleteTransactionName) deleteTransactionName.value = "";
+    if(deleteTransactionReason) deleteTransactionReason.value = "";
+    deleteTransactionOverlay.hidden = false;
+  }
+
+  function closeDeleteModal(){
+    deleteTransactionId = null;
+    if(deleteTransactionOverlay) deleteTransactionOverlay.hidden = true;
+  }
+
+  async function sendDeleteAuditEmail(details){
+    const response = await fetch(`https://formspree.io/f/${FORMSPREE_FORM_ID}`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Accept":"application/json"
+      },
+      body:JSON.stringify({
+        subject:"Our Account – Transaction Deletion",
+        notification_destination:NOTIFICATION_EMAIL,
+        action:"Single transaction deletion",
+        deleted_by:details.deletedBy,
+        reason:details.reason,
+        transaction_owner:details.tx.name,
+        transaction_type:details.tx.type,
+        transaction_amount:formatEUR(details.tx.amount),
+        transaction_date:formatDate(details.tx.date),
+        previous_balance:formatEUR(details.previousBalance),
+        expected_new_balance:formatEUR(details.newBalance),
+        message:
+          `${details.deletedBy} requested deletion of one transaction. ` +
+          `Reason: ${details.reason}. ` +
+          `Transaction: ${details.tx.name} ` +
+          `${details.tx.type === "withdrawal" ? "−" : "+"}${formatEUR(details.tx.amount)} ` +
+          `on ${formatDate(details.tx.date)}. ` +
+          `Balance before deletion: ${formatEUR(details.previousBalance)}. ` +
+          `Balance after deletion: ${formatEUR(details.newBalance)}.`
+      })
+    });
+
+    if(!response.ok) throw new Error("Delete audit email failed");
+  }
+
+  if(unlockBtn) unlockBtn.addEventListener("click", unlock);
+  if(pinInput) pinInput.addEventListener("keydown", (e) => {
+    if(e.key === "Enter") unlock();
+  });
+
+  if(openAddModal) openAddModal.addEventListener("click", () => openMoneyModal("deposit"));
+  if(openWithdrawModal) openWithdrawModal.addEventListener("click", () => openMoneyModal("withdrawal"));
+
+  document.querySelectorAll("[data-close-modal]").forEach((el) => {
+    el.addEventListener("click", closeMoneyModal);
+  });
+
+  if(moneyForm){
+    moneyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = personName ? personName.value.trim() : "";
+      const amount = Number(moneyAmount ? moneyAmount.value : 0);
+      const date = transactionDate ? transactionDate.value : "";
+
+      if(!name){
+        modalError.textContent = "Please enter a name.";
+        return;
+      }
+      if(!Number.isFinite(amount) || amount <= 0){
+        modalError.textContent = "Please enter a valid amount.";
+        return;
+      }
+      if(!date){
+        modalError.textContent = "Please choose a date.";
+        return;
+      }
+
+      await refreshFromSupabase();
+
+      if(transactionType === "withdrawal" && amount > balance){
+        modalError.textContent = "Insufficient balance.";
+        return;
+      }
+
+      const tx = {
+        name,
+        type:transactionType,
+        amount:Number(amount.toFixed(2)),
+        date
+      };
+
+      if(confirmMoneyBtn) confirmMoneyBtn.disabled = true;
+      modalError.textContent = "Saving to shared account…";
+
+      try{
+        await insertTransaction(tx);
+        await refreshFromSupabase();
+      }catch(error){
+        console.error("Supabase insert failed:", error);
+        modalError.textContent = "Could not save this transaction to the shared account.";
+        if(confirmMoneyBtn) confirmMoneyBtn.disabled = false;
+        return;
+      }
+
+      if(confirmMoneyBtn) confirmMoneyBtn.disabled = false;
+      modalError.textContent = "";
+      closeMoneyModal();
+
+      if(tx.type === "deposit") showMotivation();
+      else showWithdrawNotice(name, amount);
+
+      const emailSent = await sendTransactionEmail(tx, balance);
+      showToast(
+        emailSent
+          ? "Transaction synchronized. Email sent successfully."
+          : "Transaction synchronized, but email notification failed.",
+        emailSent ? "success" : "error"
+      );
+    });
+  }
+
+  if(motivationClose) motivationClose.addEventListener("click", hideMotivation);
+  if(motivationOverlay) motivationOverlay.addEventListener("click", (e) => {
+    if(e.target === motivationOverlay) hideMotivation();
+  });
+
+  if(withdrawNoticeClose) withdrawNoticeClose.addEventListener("click", hideWithdrawNotice);
+  if(withdrawNoticeOverlay) withdrawNoticeOverlay.addEventListener("click", (e) => {
+    if(e.target === withdrawNoticeOverlay) hideWithdrawNotice();
+  });
+
+  if(deleteTransactionClose) deleteTransactionClose.addEventListener("click", closeDeleteModal);
+  if(deleteTransactionCancel) deleteTransactionCancel.addEventListener("click", closeDeleteModal);
+  if(deleteTransactionOverlay) deleteTransactionOverlay.addEventListener("click", (e) => {
+    if(e.target === deleteTransactionOverlay) closeDeleteModal();
+  });
+
+  if(deleteTransactionForm){
+    deleteTransactionForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const deletedBy = deleteTransactionName ? deleteTransactionName.value.trim() : "";
+      const reason = deleteTransactionReason ? deleteTransactionReason.value.trim() : "";
+
+      if(!deletedBy || !reason){
+        alert("Please complete Name and Reason.");
+        return;
+      }
+
+      await refreshFromSupabase();
+
+      const tx = findTransaction(deleteTransactionId);
+      if(!tx){
+        alert("This transaction no longer exists. The history has been refreshed.");
+        closeDeleteModal();
+        return;
+      }
+
+      const previousBalance = balance;
+      const impact = tx.type === "withdrawal" ? -Number(tx.amount) : Number(tx.amount);
+      const newBalance = previousBalance - impact;
+
+      if(!confirm("Delete this transaction from the shared account?")) return;
+
+      // Audit notification must succeed before deletion is allowed.
+      try{
+        await sendDeleteAuditEmail({
+          deletedBy,
+          reason,
+          tx,
+          previousBalance,
+          newBalance
+        });
+      }catch(error){
+        alert("Transaction was NOT deleted because the email notification could not be sent.");
+        return;
+      }
+
+      try{
+        await removeTransaction(tx.id);
+        await refreshFromSupabase();
+      }catch(error){
+        console.error("Supabase delete failed:", error);
+        alert("The email was sent, but the transaction could not be removed from the shared database.");
+        return;
+      }
+
+      closeDeleteModal();
+      alert("Transaction deleted from the shared account. Notification email sent.");
+    });
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if(e.key !== "Escape") return;
+    closeMoneyModal();
+    hideMotivation();
+    hideWithdrawNotice();
+    closeDeleteModal();
+  });
+
+  // Supabase is the only source for balance/history.
+  refreshFromSupabase();
+
+  // Live updates from every device.
+  db.channel("niki-avery-transactions-live")
+    .on(
+      "postgres_changes",
+      {event:"*", schema:"public", table:"transactions"},
+      () => refreshFromSupabase()
+    )
+    .subscribe((status) => {
+      if(status === "CHANNEL_ERROR"){
+        console.error("Supabase Realtime channel error.");
+      }
+    });
+
+  // Phones may suspend Realtime in background; refresh on return.
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden){
+      if(unlocked) setLockedUI(false);
+    }else{
+      refreshFromSupabase();
+    }
+  });
+
+  window.addEventListener("pagehide", () => setLockedUI(false));
+  window.addEventListener("beforeunload", () => {
+    sessionStorage.removeItem("privateUnlocked");
+    sessionStorage.removeItem("privateSessionStartedAt");
+  });
+
+  // Blur covers switching tabs/windows on browsers that do not immediately hide the page.
+  window.addEventListener("blur", () => {
+    if(unlocked) setLockedUI(false);
+  });
+
+  window.addEventListener("focus", () => {
+    refreshFromSupabase();
+  });
+
+  // Always request PIN on first load/reload.
+  setLockedUI(false);
+})();
+</script>
+
+</body>
+</html>
