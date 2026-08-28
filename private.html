@@ -1057,348 +1057,6 @@
 
 </style>
 
-  <script>
-
-      // Definitive tab re-authentication flag.
-      let MUST_REAUTHENTICATE_PRIVATE = true;
-
-      function forcePrivateReauthentication(){
-        MUST_REAUTHENTICATE_PRIVATE = true;
-        sessionStorage.removeItem("privateUnlocked");
-        sessionStorage.removeItem("privateSessionStartedAt");
-
-        document.documentElement.classList.add("private-locked");
-
-        const gate =
-          document.getElementById("pinGate") ||
-          document.getElementById("lockScreen") ||
-          document.querySelector(".pin-gate") ||
-          document.querySelector(".lock-screen");
-
-        const content =
-          document.getElementById("privateContent") ||
-          document.getElementById("accountContent") ||
-          document.querySelector(".private-content") ||
-          document.querySelector(".account-content") ||
-          document.querySelector(".private-shell") ||
-          document.querySelector(".account-shell");
-
-        if(content && content !== gate && !content.contains(gate)){
-          content.hidden = true;
-          content.style.display = "none";
-          content.style.visibility = "hidden";
-          content.style.opacity = "0";
-          content.style.pointerEvents = "none";
-          content.setAttribute("aria-hidden", "true");
-          try { content.inert = true; } catch(e) {}
-        }
-
-        if(gate){
-          gate.hidden = false;
-          gate.style.display = "flex";
-          gate.style.visibility = "visible";
-          gate.style.opacity = "1";
-          gate.style.pointerEvents = "auto";
-          gate.style.position = "fixed";
-          gate.style.inset = "0";
-          gate.style.zIndex = "2147483647";
-          gate.setAttribute("aria-hidden", "false");
-          try { gate.inert = false; } catch(e) {}
-        }
-
-        const pin = gate ? gate.querySelector('input[type="password"]') : document.querySelector('input[type="password"]');
-        if(pin) pin.value = "";
-      }
-
-      function markPrivateAuthenticated(){
-        MUST_REAUTHENTICATE_PRIVATE = false;
-      }
-
-      // Changing browser tab / hiding the page ALWAYS invalidates access.
-      document.addEventListener("visibilitychange", function(){
-        if(document.visibilityState === "hidden"){
-          forcePrivateReauthentication();
-        }else if(MUST_REAUTHENTICATE_PRIVATE){
-          forcePrivateReauthentication();
-        }
-      }, true);
-
-      window.addEventListener("pagehide", function(){
-        forcePrivateReauthentication();
-      }, true);
-
-      window.addEventListener("blur", function(){
-        forcePrivateReauthentication();
-      }, true);
-
-      window.addEventListener("focus", function(){
-        if(MUST_REAUTHENTICATE_PRIVATE){
-          forcePrivateReauthentication();
-        }
-      }, true);
-
-
-      function getPrivateMain(){
-        return document.querySelector("main");
-      }
-
-      function definitiveLockPrivatePage(showExpiredMessage){
-        PRIVATE_PAGE_UNLOCKED = false;
-        sessionStorage.removeItem("privateUnlocked");
-        sessionStorage.removeItem("privateSessionStartedAt");
-        document.documentElement.classList.add("private-locked");
-
-        const gate = getPrivateGate ? getPrivateGate() :
-          (document.getElementById("pinGate") ||
-           document.getElementById("lockScreen") ||
-           document.querySelector(".pin-gate") ||
-           document.querySelector(".lock-screen"));
-
-        const content = getPrivateContent ? getPrivateContent() :
-          (document.getElementById("privateContent") ||
-           document.getElementById("accountContent") ||
-           document.querySelector(".private-content") ||
-           document.querySelector(".account-content") ||
-           document.querySelector(".private-shell") ||
-           document.querySelector(".account-shell"));
-
-        // Hide ONLY the account content. Never hide ancestors that may contain the PIN gate.
-        if(content && content !== gate && !content.contains(gate)){
-          content.hidden = true;
-          content.style.display = "none";
-          content.style.visibility = "hidden";
-          content.style.opacity = "0";
-          content.style.pointerEvents = "none";
-          content.setAttribute("aria-hidden", "true");
-          try { content.inert = true; } catch(e) {}
-        }
-
-        // PIN gate must always remain visible and interactive.
-        if(gate){
-          gate.hidden = false;
-          gate.style.display = "flex";
-          gate.style.visibility = "visible";
-          gate.style.opacity = "1";
-          gate.style.pointerEvents = "auto";
-          gate.style.position = "fixed";
-          gate.style.inset = "0";
-          gate.style.zIndex = "2147483647";
-          gate.setAttribute("aria-hidden", "false");
-          try { gate.inert = false; } catch(e) {}
-        }
-
-        const expired = document.getElementById("sessionExpiredMessage");
-        if(expired) expired.hidden = !showExpiredMessage;
-
-        const pin = gate ? gate.querySelector('input[type="password"]') : document.querySelector('input[type="password"]');
-        if(pin){
-          pin.value = "";
-          setTimeout(() => {
-            try { pin.focus({preventScroll:true}); } catch(e) { pin.focus(); }
-          }, 100);
-        }
-      }
-        });
-
-        if(gate){
-          gate.hidden = false;
-          gate.style.display = "flex";
-          gate.style.visibility = "visible";
-          gate.style.opacity = "1";
-          gate.style.pointerEvents = "auto";
-          gate.setAttribute("aria-hidden", "false");
-        }
-
-        const expired = document.getElementById("sessionExpiredMessage");
-        if(expired) expired.hidden = !showExpiredMessage;
-
-        const pin = document.querySelector('input[type="password"]');
-        if(pin){
-          pin.value = "";
-          setTimeout(() => pin.focus(), 50);
-        }
-      }
-
-      function definitiveUnlockPrivatePage(){
-        markPrivateAuthenticated();
-        PRIVATE_PAGE_UNLOCKED = true;
-        sessionStorage.setItem("privateUnlocked", "true");
-        sessionStorage.setItem("privateSessionStartedAt", String(Date.now()));
-        document.documentElement.classList.remove("private-locked");
-
-        const gate = getPrivateGate ? getPrivateGate() :
-          (document.getElementById("pinGate") ||
-           document.getElementById("lockScreen") ||
-           document.querySelector(".pin-gate") ||
-           document.querySelector(".lock-screen"));
-
-        const content = getPrivateContent ? getPrivateContent() :
-          (document.getElementById("privateContent") ||
-           document.getElementById("accountContent") ||
-           document.querySelector(".private-content") ||
-           document.querySelector(".account-content") ||
-           document.querySelector(".private-shell") ||
-           document.querySelector(".account-shell"));
-
-        if(gate){
-          gate.hidden = true;
-          gate.style.display = "none";
-          gate.setAttribute("aria-hidden", "true");
-        }
-
-        if(content && content !== gate){
-          content.hidden = false;
-          content.style.display = "";
-          content.style.visibility = "visible";
-          content.style.opacity = "1";
-          content.style.pointerEvents = "";
-          content.setAttribute("aria-hidden", "false");
-          try { content.inert = false; } catch(e) {}
-        }
-
-        const expired = document.getElementById("sessionExpiredMessage");
-        if(expired) expired.hidden = true;
-
-        if(typeof startPrivateSessionTimer === "function"){
-          startPrivateSessionTimer();
-        }
-      }
-
-        [main, content].forEach(el => {
-          if(el){
-            el.hidden = false;
-            el.style.display = "";
-            el.style.visibility = "visible";
-            el.style.opacity = "1";
-            el.style.pointerEvents = "";
-            el.setAttribute("aria-hidden", "false");
-            try { el.inert = false; } catch(e) {}
-          }
-        });
-
-        const expired = document.getElementById("sessionExpiredMessage");
-        if(expired) expired.hidden = true;
-
-        if(typeof startPrivateSessionTimer === "function"){
-          startPrivateSessionTimer();
-        }
-      }
-
-
-      let PRIVATE_PAGE_UNLOCKED = false;
-
-      function getPrivateGate(){
-        return document.getElementById("pinGate") ||
-               document.getElementById("lockScreen") ||
-               document.querySelector(".pin-gate") ||
-               document.querySelector(".lock-screen");
-      }
-
-      function getPrivateContent(){
-        return document.getElementById("privateContent") ||
-               document.getElementById("accountContent") ||
-               document.querySelector(".private-content") ||
-               document.querySelector(".account-content") ||
-               document.querySelector(".private-shell") ||
-               document.querySelector(".account-shell");
-      }
-
-      function hardLockPrivatePage(showExpiredMessage){
-        PRIVATE_PAGE_UNLOCKED = false;
-        sessionStorage.removeItem("privateUnlocked");
-        sessionStorage.removeItem("privateSessionStartedAt");
-        document.documentElement.classList.add("private-locked");
-
-        const gate = getPrivateGate();
-        const content = getPrivateContent();
-
-        if(content){
-          content.hidden = true;
-          content.style.display = "none";
-          content.setAttribute("aria-hidden", "true");
-          try { content.inert = true; } catch(e) {}
-        }
-
-        if(gate){
-          gate.hidden = false;
-          gate.style.display = "flex";
-          gate.setAttribute("aria-hidden", "false");
-        }
-
-        const expired = document.getElementById("sessionExpiredMessage");
-        if(expired) expired.hidden = !showExpiredMessage;
-
-        const pin = document.querySelector('input[type="password"]');
-        if(pin){
-          pin.value = "";
-          setTimeout(() => pin.focus(), 50);
-        }
-      }
-
-      function hardUnlockPrivatePage(){
-        PRIVATE_PAGE_UNLOCKED = true;
-        document.documentElement.classList.remove("private-locked");
-        sessionStorage.setItem("privateUnlocked", "true");
-          definitiveUnlockPrivatePage();
-        sessionStorage.setItem("privateSessionStartedAt", String(Date.now()));
-
-        const gate = getPrivateGate();
-        const content = getPrivateContent();
-
-        if(gate){
-          gate.hidden = true;
-          gate.style.display = "none";
-          gate.setAttribute("aria-hidden", "true");
-        }
-
-        if(content){
-          content.hidden = false;
-          content.style.display = "";
-          content.style.visibility = "visible";
-          content.style.opacity = "1";
-          content.setAttribute("aria-hidden", "false");
-          try { content.inert = false; } catch(e) {}
-        }
-
-        const expired = document.getElementById("sessionExpiredMessage");
-        if(expired) expired.hidden = true;
-
-        if(typeof startPrivateSessionTimer === "function"){
-          startPrivateSessionTimer();
-        }
-      }
-
-      // Leaving the page in any practical way locks it immediately.
-      document.addEventListener("visibilitychange", function(){
-        if(document.hidden){
-          definitiveLockPrivatePage(false);
-        }
-      }, true);
-
-      window.addEventListener("blur", function(){
-        definitiveLockPrivatePage(false);
-      }, true);
-
-      window.addEventListener("pagehide", function(){
-        definitiveLockPrivatePage(false);
-      }, true);
-
-      window.addEventListener("beforeunload", function(){
-        sessionStorage.removeItem("privateUnlocked");
-        sessionStorage.removeItem("privateSessionStartedAt");
-        document.documentElement.classList.add("private-locked");
-      });
-
-      // Returning never auto-unlocks.
-      window.addEventListener("focus", function(){
-        if(!PRIVATE_PAGE_UNLOCKED){
-          definitiveLockPrivatePage(false);
-        }
-      }, true);
-
-    document.documentElement.classList.add("private-locked");
-  </script>
-
 </head>
 <body>
   <header>
@@ -1547,748 +1205,6 @@
     </section>
   </div>
 
-
-  <script>
-    (function(){
-      const PIN = "248624";
-
-      const PRIVATE_SESSION_KEY = "privateUnlocked";
-      const PRIVATE_SESSION_STARTED_KEY = "privateSessionStartedAt";
-      const PRIVATE_SESSION_LIMIT_MS = 2 * 60 * 1000;
-      let privateSessionTimer = null;
-
-      const sessionExpiredMessage = document.getElementById("sessionExpiredMessage");
-
-      function showSessionExpiredMessage(){
-        if(sessionExpiredMessage){
-          sessionExpiredMessage.hidden = false;
-        }
-      }
-
-      function hideSessionExpiredMessage(){
-        if(sessionExpiredMessage){
-          sessionExpiredMessage.hidden = true;
-        }
-      }
-
-      function clearPrivateSession(){
-        sessionStorage.removeItem(PRIVATE_SESSION_KEY);
-        sessionStorage.removeItem(PRIVATE_SESSION_STARTED_KEY);
-        if(privateSessionTimer){
-          clearTimeout(privateSessionTimer);
-          privateSessionTimer = null;
-        }
-      }
-
-      function lockPrivatePage(showExpired){
-        clearPrivateSession();
-
-        // Try common element ids/classes used by the Private PIN gate.
-        const gate = document.getElementById("pinGate") ||
-                     document.getElementById("lockScreen") ||
-                     document.querySelector(".pin-gate") ||
-                     document.querySelector(".lock-screen");
-        const content = document.getElementById("privateContent") ||
-                        document.getElementById("accountContent") ||
-                        document.querySelector(".private-content") ||
-                        document.querySelector(".account-content");
-
-        if(gate) gate.style.display = "";
-        if(content) content.style.display = "none";
-
-        if(showExpired){
-          showSessionExpiredMessage();
-        }else{
-          hideSessionExpiredMessage();
-        }
-
-        const pinInput = document.querySelector('input[type="password"]');
-        if(pinInput){
-          pinInput.value = "";
-          setTimeout(() => pinInput.focus(), 50);
-        }
-      }
-
-      function startPrivateSessionTimer(){
-        if(privateSessionTimer) clearTimeout(privateSessionTimer);
-        sessionStorage.setItem(PRIVATE_SESSION_STARTED_KEY, String(Date.now()));
-        privateSessionTimer = setTimeout(() => {
-          definitiveLockPrivatePage(true);
-          alert("Session expired. Please enter the PIN again.");
-        }, PRIVATE_SESSION_LIMIT_MS);
-      }
-
-      function resumeOrLockPrivateSession(){
-        const unlocked = sessionStorage.getItem(PRIVATE_SESSION_KEY) === "true";
-        const started = Number(sessionStorage.getItem(PRIVATE_SESSION_STARTED_KEY) || 0);
-
-        if(!unlocked || !started){
-          definitiveLockPrivatePage(false);
-          return;
-        }
-
-        const elapsed = Date.now() - started;
-        if(elapsed >= PRIVATE_SESSION_LIMIT_MS){
-          definitiveLockPrivatePage(true);
-          return;
-        }
-
-        privateSessionTimer = setTimeout(() => {
-          definitiveLockPrivatePage(true);
-          alert("Session expired. Please enter the PIN again.");
-        }, PRIVATE_SESSION_LIMIT_MS - elapsed);
-      }
-
-      // Any leave/minimize/tab switch locks the page immediately.
-      document.addEventListener("visibilitychange", () => {
-        if(document.hidden){
-          clearPrivateSession();
-        }else{
-          definitiveLockPrivatePage(false);
-        }
-      });
-
-      window.addEventListener("pagehide", () => {
-        clearPrivateSession();
-      });
-
-      window.addEventListener("beforeunload", () => {
-        clearPrivateSession();
-      });
-
-      const BALANCE_KEY = "nikiAverySharedBalance";
-      const TRANSACTIONS_KEY = "nikiAveryTransactions";
-      const STARTING_BALANCE = 390;
-
-      const RESET_VERSION = "seeded-history-v2-final";
-      const RESET_VERSION_KEY = "nikiAveryLedgerResetVersion";
-      const INITIAL_TRANSACTIONS = [{"id":2026082101,"type":"deposit","name":"Ники","amount":100.0,"date":"2026-08-21"},{"id":2026082201,"type":"deposit","name":"Ники","amount":60.0,"date":"2026-08-22"},{"id":2026082501,"type":"deposit","name":"Айвъри","amount":20.0,"date":"2026-08-25"},{"id":2026082601,"type":"deposit","name":"Ники","amount":210.0,"date":"2026-08-26"}];
-
-      if(localStorage.getItem(RESET_VERSION_KEY) !== RESET_VERSION){
-        localStorage.removeItem("nikiAverySharedBalance");
-        localStorage.removeItem("nikiAveryTransactions");
-        localStorage.setItem("nikiAverySharedBalance", "390.00");
-        localStorage.setItem("nikiAveryTransactions", JSON.stringify(INITIAL_TRANSACTIONS));
-        localStorage.setItem(RESET_VERSION_KEY, RESET_VERSION);
-      }
-
-
-
-
-
-      // EMAIL NOTIFICATION SETTINGS
-      // Replace YOUR_FORMSPREE_FORM_ID with the Form ID from Formspree.
-      const FORMSPREE_FORM_ID = "myeyyzvg";
-      const NOTIFICATION_EMAIL = "minkov_n@icloud.com";
-
-      const pinInput = document.getElementById("pinInput");
-      const unlockBtn = document.getElementById("unlockBtn");
-      const pinMessage = document.getElementById("pinMessage");
-      const lockView = document.getElementById("lockView");
-      const accountView = document.getElementById("accountView");
-
-      const mainBalance = document.getElementById("mainBalance");
-      const savedBalance = document.getElementById("savedBalance");
-      const cardBalance = document.getElementById("cardBalance");
-      const activityBalance = document.getElementById("activityBalance");
-
-      const openAddModal = document.getElementById("openAddModal");
-      const openWithdrawModal = document.getElementById("openWithdrawModal");
-      const modal = document.getElementById("moneyModal");
-      const modalTitle = document.getElementById("moneyModalTitle");
-      const modalDescription = document.getElementById("moneyModalDescription");
-      const form = document.getElementById("moneyForm");
-      const personName = document.getElementById("personName");
-      const moneyAmount = document.getElementById("moneyAmount");
-      const transactionDate = document.getElementById("transactionDate");
-      const confirmMoneyBtn = document.getElementById("confirmMoneyBtn");
-      const modalError = document.getElementById("modalError");
-      const transactionsList = document.getElementById("transactionsList");
-      const emptyTransactions = document.getElementById("emptyTransactions");
-      const emailStatusBadge = document.getElementById("emailStatusBadge");
-      const emailToast = document.getElementById("emailToast");
-
-      let transactionType = "deposit";
-
-      function showAccount(){
-        lockView.style.display = "none";
-        accountView.classList.add("show");
-      }
-
-      function unlock(){
-        if(pinInput.value === PIN){
-          sessionStorage.setItem("privateUnlocked","1");
-          showAccount();
-        } else {
-          pinMessage.textContent = "Incorrect PIN.";
-          pinInput.value = "";
-          pinInput.focus();
-        }
-      }
-
-      function getBalance(){
-        const stored = localStorage.getItem(BALANCE_KEY);
-        if(stored === null){
-          localStorage.setItem(BALANCE_KEY, STARTING_BALANCE.toFixed(2));
-          return STARTING_BALANCE;
-        }
-        const value = Number(stored);
-        return Number.isFinite(value) ? value : STARTING_BALANCE;
-      }
-
-      function setBalance(value){
-        localStorage.setItem(BALANCE_KEY, value.toFixed(2));
-      }
-
-      function formatEUR(value){
-        return "€" + Number(value).toFixed(2);
-      }
-
-      function renderBalance(){
-        const value = getBalance();
-        [mainBalance, savedBalance, cardBalance, activityBalance].forEach(function(el){
-          if(el) el.textContent = formatEUR(value);
-        });
-      }
-
-      function getTransactions(){
-        try{
-          return JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || "[]");
-        }catch(e){
-          return [];
-        }
-      }
-
-      function saveTransactions(items){
-        localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(items));
-      }
-
-      function formatDate(dateStr){
-        const parts = dateStr.split("-");
-        if(parts.length !== 3) return dateStr;
-        return parts[2] + "." + parts[1] + "." + parts[0];
-      }
-
-      function renderTransactions(){
-        const items = getTransactions();
-        transactionsList.innerHTML = "";
-
-        if(!items.length){
-          emptyTransactions.style.display = "block";
-          return;
-        }
-
-        emptyTransactions.style.display = "none";
-
-        items.slice().reverse().forEach(function(item){
-          const row = document.createElement("div");
-          row.className = "transaction-entry" + (item.type === "withdrawal" ? " withdrawal" : "");
-
-          const icon = document.createElement("div");
-          icon.className = "transaction-icon";
-          icon.textContent = item.type === "withdrawal" ? "↘" : "↗";
-
-          const details = document.createElement("div");
-
-          const person = document.createElement("div");
-          person.className = "transaction-person";
-          person.textContent = item.name;
-
-          const meta = document.createElement("div");
-          meta.className = "transaction-meta";
-          meta.textContent = (item.type === "withdrawal" ? "Withdrawal" : "Deposit") + " · " + formatDate(item.date);
-
-          details.appendChild(person);
-          details.appendChild(meta);
-
-          const value = document.createElement("div");
-          value.className = "transaction-value";
-          value.textContent = (item.type === "withdrawal" ? "−" : "+") + formatEUR(item.amount);
-
-          row.appendChild(icon);
-          row.appendChild(details);
-          row.appendChild(value);
-          transactionsList.appendChild(row);
-        });
-      }
-
-      function localToday(){
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2,"0");
-        const d = String(now.getDate()).padStart(2,"0");
-        return y + "-" + m + "-" + d;
-      }
-
-      function openModal(type){
-        transactionType = type;
-        form.reset();
-        modalError.textContent = "";
-        transactionDate.value = localToday();
-
-        if(type === "withdrawal"){
-          modalTitle.textContent = "Withdraw Money";
-          modalDescription.textContent = "Enter who is withdrawing the money, the amount, and the date.";
-          confirmMoneyBtn.textContent = "Withdraw Money";
-        }else{
-          modalTitle.textContent = "Add Money";
-          modalDescription.textContent = "Enter who is adding the money, the amount, and the date.";
-          confirmMoneyBtn.textContent = "Add Money";
-        }
-
-        modal.classList.add("show");
-        modal.setAttribute("aria-hidden","false");
-        setTimeout(function(){ personName.focus(); }, 50);
-      }
-
-      function closeModal(){
-        modal.classList.remove("show");
-        modal.setAttribute("aria-hidden","true");
-      }
-
-
-
-      function showEmailToast(message, type){
-        if(!emailToast) return;
-        emailToast.textContent = message;
-        emailToast.classList.remove("success", "error", "show");
-        emailToast.classList.add(type === "success" ? "success" : "error");
-        requestAnimationFrame(() => emailToast.classList.add("show"));
-        clearTimeout(window.__emailToastTimer);
-        window.__emailToastTimer = setTimeout(() => {
-          emailToast.classList.remove("show");
-        }, 4200);
-      }
-
-      function emailIsConfigured(){
-        return FORMSPREE_FORM_ID && FORMSPREE_FORM_ID !== "YOUR_FORMSPREE_FORM_ID";
-      }
-
-      function updateEmailStatus(){
-        if(!emailStatusBadge) return;
-        if(emailIsConfigured()){
-          emailStatusBadge.textContent = "Active";
-          emailStatusBadge.classList.remove("pending");
-          emailStatusBadge.classList.add("ready");
-        }else{
-          emailStatusBadge.textContent = "Setup required";
-          emailStatusBadge.classList.remove("ready");
-          emailStatusBadge.classList.add("pending");
-        }
-      }
-
-      async function sendTransactionEmail(transaction, newBalance){
-        if(!emailIsConfigured()) return false;
-
-        const endpoint = "https://formspree.io/f/" + FORMSPREE_FORM_ID;
-        const typeLabel = transaction.type === "withdrawal" ? "Withdraw Money" : "Add Money";
-
-        const payload = {
-          subject: "Our Account – " + typeLabel,
-          notification_destination: NOTIFICATION_EMAIL,
-          transaction: typeLabel,
-          name: transaction.name,
-          amount: "€" + Number(transaction.amount).toFixed(2),
-          date: formatDate(transaction.date),
-          new_balance: "€" + Number(newBalance).toFixed(2),
-          message:
-            transaction.name + " " +
-            (transaction.type === "withdrawal" ? "withdrew " : "added ") +
-            "€" + Number(transaction.amount).toFixed(2) +
-            " on " + formatDate(transaction.date) +
-            ". New balance: €" + Number(newBalance).toFixed(2) + "."
-        };
-
-        try{
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json"
-            },
-            body: JSON.stringify(payload)
-          });
-          return response.ok;
-        }catch(error){
-          return false;
-        }
-      }
-
-      
-      const motivationOverlay = document.getElementById("motivationOverlay");
-      const motivationClose = document.getElementById("motivationClose");
-
-      function showMotivationMessage(){
-        if(motivationOverlay) motivationOverlay.hidden = false;
-      }
-
-      function hideMotivationMessage(){
-        if(motivationOverlay) motivationOverlay.hidden = true;
-      }
-
-      if(motivationClose){
-        motivationClose.addEventListener("click", hideMotivationMessage);
-      }
-
-      if(motivationOverlay){
-        motivationOverlay.addEventListener("click", function(e){
-          if(e.target === motivationOverlay){
-            hideMotivationMessage();
-          }
-        });
-      }
-
-      document.addEventListener("keydown", function(e){
-        if(e.key === "Escape" && motivationOverlay && !motivationOverlay.hidden){
-          hideMotivationMessage();
-        }
-      });
-
-      
-      const withdrawNoticeOverlay = document.getElementById("withdrawNoticeOverlay");
-      const withdrawNoticeClose = document.getElementById("withdrawNoticeClose");
-      const withdrawNoticeName = document.getElementById("withdrawNoticeName");
-      const withdrawNoticeAmount = document.getElementById("withdrawNoticeAmount");
-
-      function showWithdrawNotice(name, amount){
-        if(withdrawNoticeName) withdrawNoticeName.textContent = name;
-        if(withdrawNoticeAmount) withdrawNoticeAmount.textContent = "€" + Number(amount).toFixed(2);
-        if(withdrawNoticeOverlay) withdrawNoticeOverlay.hidden = false;
-      }
-
-      function hideWithdrawNotice(){
-        if(withdrawNoticeOverlay) withdrawNoticeOverlay.hidden = true;
-      }
-
-      if(withdrawNoticeClose){
-        withdrawNoticeClose.addEventListener("click", hideWithdrawNotice);
-      }
-
-      if(withdrawNoticeOverlay){
-        withdrawNoticeOverlay.addEventListener("click", function(e){
-          if(e.target === withdrawNoticeOverlay){
-            hideWithdrawNotice();
-          }
-        });
-      }
-
-      document.addEventListener("keydown", function(e){
-        if(e.key === "Escape" && withdrawNoticeOverlay && !withdrawNoticeOverlay.hidden){
-          hideWithdrawNotice();
-        }
-      });
-
-      form.addEventListener("submit", async function(e){
-        e.preventDefault();
-
-        const name = personName.value.trim();
-        const amount = Number(moneyAmount.value);
-        const date = transactionDate.value;
-
-        if(!name){
-          modalError.textContent = "Please enter a name.";
-          return;
-        }
-        if(!Number.isFinite(amount) || amount <= 0){
-          modalError.textContent = "Please enter a valid amount.";
-          return;
-        }
-        if(!date){
-          modalError.textContent = "Please choose a date.";
-          return;
-        }
-
-        let balance = getBalance();
-
-        if(transactionType === "withdrawal"){
-          if(amount > balance){
-            modalError.textContent = "Insufficient balance.";
-            return;
-          }
-          balance -= amount;
-        }else{
-          balance += amount;
-        }
-
-        const items = getTransactions();
-        const transaction = {
-          id: Date.now(),
-          type: transactionType,
-          name: name,
-          amount: Number(amount.toFixed(2)),
-          date: date
-        };
-        items.push(transaction);
-
-        setBalance(balance);
-        saveTransactions(items);
-        renderBalance();
-        renderTransactions();
-        closeModal();
-
-        if(transactionType === "deposit"){
-          showMotivationMessage();
-        }else if(transactionType === "withdrawal"){
-          showWithdrawNotice(name, amount);
-        }
-
-        // Email alert is sent after the local ledger has been updated.
-        const emailSent = await sendTransactionEmail(transaction, balance);
-        if(emailSent){
-          showEmailToast("Email sent successfully.", "success");
-        }else{
-          showEmailToast("Transaction saved, but email notification failed.", "error");
-        }
-      });
-
-      unlockBtn.addEventListener("click", unlock);
-      pinInput.addEventListener("keydown", function(e){
-        if(e.key === "Enter") unlock();
-      });
-
-      openAddModal.addEventListener("click", function(){ openModal("deposit"); });
-      openWithdrawModal.addEventListener("click", function(){ openModal("withdrawal"); });
-
-      document.querySelectorAll("[data-close-modal]").forEach(function(el){
-        el.addEventListener("click", closeModal);
-      });
-
-      document.addEventListener("keydown", function(e){
-        if(e.key === "Escape" && modal.classList.contains("show")){
-          closeModal();
-        }
-      });
-
-      if(sessionStorage.getItem("privateUnlocked") === "1"){
-        showAccount();
-      }
-
-      renderBalance();
-      renderTransactions();
-      updateEmailStatus();
-    })();
-  
-      resumeOrLockPrivateSession();
-
-      definitiveLockPrivatePage(false); // initial hard lock
-
-
-
-      let transactionPendingDeletionIndex = null;
-
-      const deleteTransactionOverlay = document.getElementById("deleteTransactionOverlay");
-      const deleteTransactionClose = document.getElementById("deleteTransactionClose");
-      const deleteTransactionCancel = document.getElementById("deleteTransactionCancel");
-      const deleteTransactionForm = document.getElementById("deleteTransactionForm");
-      const deleteTransactionName = document.getElementById("deleteTransactionName");
-      const deleteTransactionReason = document.getElementById("deleteTransactionReason");
-      const deleteTransactionSummary = document.getElementById("deleteTransactionSummary");
-
-      function getStoredTransactions(){
-        try{
-          return JSON.parse(localStorage.getItem("nikiAveryTransactions") || "[]");
-        }catch(e){
-          return [];
-        }
-      }
-
-      function openDeleteTransactionModal(index){
-        const transactions = getStoredTransactions();
-        const transaction = transactions[index];
-        if(!transaction) return;
-
-        transactionPendingDeletionIndex = index;
-
-        const sign = transaction.type === "withdrawal" ? "-" : "+";
-        const amount = Number(transaction.amount || 0).toFixed(2);
-        const date = typeof formatLedgerDate === "function"
-          ? formatLedgerDate(transaction.date)
-          : (transaction.date || "");
-
-        if(deleteTransactionSummary){
-          deleteTransactionSummary.textContent =
-            `${transaction.name || "Unknown"} ${sign}€${amount} — ${date}`;
-        }
-
-        if(deleteTransactionName) deleteTransactionName.value = "";
-        if(deleteTransactionReason) deleteTransactionReason.value = "";
-        if(deleteTransactionOverlay) deleteTransactionOverlay.hidden = false;
-      }
-
-      function closeDeleteTransactionModal(){
-        transactionPendingDeletionIndex = null;
-        if(deleteTransactionOverlay) deleteTransactionOverlay.hidden = true;
-      }
-
-      async function sendSingleTransactionDeletionEmail(details){
-        const response = await fetch("https://formspree.io/f/myeyyzvg", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            subject: "Our Account – Transaction Deleted",
-            notification_destination: "minkov_n@icloud.com",
-            action: "Single transaction deleted",
-            deleted_by: details.deletedBy,
-            reason: details.reason,
-            transaction_owner: details.transaction.name,
-            transaction_type: details.transaction.type,
-            transaction_amount: "€" + Number(details.transaction.amount || 0).toFixed(2),
-            transaction_date: details.transaction.date,
-            previous_balance: "€" + Number(details.previousBalance || 0).toFixed(2),
-            new_balance: "€" + Number(details.newBalance || 0).toFixed(2),
-            message:
-              `${details.deletedBy} deleted one transaction. ` +
-              `Reason: ${details.reason}. ` +
-              `Transaction: ${details.transaction.name} ` +
-              `${details.transaction.type === "withdrawal" ? "-" : "+"}€${Number(details.transaction.amount || 0).toFixed(2)} ` +
-              `on ${details.transaction.date}. ` +
-              `Previous balance: €${Number(details.previousBalance || 0).toFixed(2)}. ` +
-              `New balance: €${Number(details.newBalance || 0).toFixed(2)}.`
-          })
-        });
-
-        if(!response.ok){
-          throw new Error("Email notification failed");
-        }
-      }
-
-      if(deleteTransactionClose) deleteTransactionClose.addEventListener("click", closeDeleteTransactionModal);
-      if(deleteTransactionCancel) deleteTransactionCancel.addEventListener("click", closeDeleteTransactionModal);
-
-      if(deleteTransactionOverlay){
-        deleteTransactionOverlay.addEventListener("click", function(e){
-          if(e.target === deleteTransactionOverlay) closeDeleteTransactionModal();
-        });
-      }
-
-      document.addEventListener("keydown", function(e){
-        if(e.key === "Escape" && deleteTransactionOverlay && !deleteTransactionOverlay.hidden){
-          closeDeleteTransactionModal();
-        }
-      });
-
-      if(deleteTransactionForm){
-        deleteTransactionForm.addEventListener("submit", async function(e){
-          e.preventDefault();
-
-          const deletedBy = deleteTransactionName.value.trim();
-          const reason = deleteTransactionReason.value.trim();
-
-          if(!deletedBy || !reason){
-            alert("Please complete Name and Reason.");
-            return;
-          }
-
-          const transactions = getStoredTransactions();
-          const index = transactionPendingDeletionIndex;
-          const transaction = transactions[index];
-          if(!transaction){
-            alert("This transaction could not be found.");
-            closeDeleteTransactionModal();
-            return;
-          }
-
-          const previousBalance = Number(localStorage.getItem("nikiAverySharedBalance") || "0");
-          const impact = transaction.type === "withdrawal"
-            ? -Number(transaction.amount || 0)
-            : Number(transaction.amount || 0);
-
-          const newBalance = previousBalance - impact;
-
-          if(!confirm("Delete this transaction?")){
-            return;
-          }
-
-          const details = {
-            deletedBy,
-            reason,
-            transaction,
-            previousBalance,
-            newBalance
-          };
-
-          // Delete only if the notification email succeeds.
-          try{
-            await sendSingleTransactionDeletionEmail(details);
-          }catch(error){
-            alert("Transaction was NOT deleted because the email notification could not be sent.");
-            return;
-          }
-
-          transactions.splice(index, 1);
-          localStorage.setItem("nikiAveryTransactions", JSON.stringify(transactions));
-          localStorage.setItem("nikiAverySharedBalance", newBalance.toFixed(2));
-
-          if(typeof renderTransactions === "function") renderTransactions();
-          if(typeof renderBalance === "function") renderBalance();
-
-          closeDeleteTransactionModal();
-          alert("Transaction deleted. Notification email sent.");
-        });
-      }
-
-      // Adds a Delete button to every rendered history row.
-      function attachDeleteButtonsToTransactionRows(){
-        const transactions = getStoredTransactions();
-
-        const possibleRows = Array.from(document.querySelectorAll(
-          ".transaction-row, .history-row, .transaction-item, .history-item"
-        ));
-
-        possibleRows.forEach((row, index) => {
-          if(index >= transactions.length) return;
-          if(row.querySelector(".transaction-delete-btn")) return;
-
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "transaction-delete-btn";
-          btn.textContent = "Delete";
-          btn.addEventListener("click", function(e){
-            e.stopPropagation();
-            openDeleteTransactionModal(index);
-          });
-
-          row.appendChild(btn);
-        });
-      }
-
-      const originalRenderTransactions =
-        typeof renderTransactions === "function" ? renderTransactions : null;
-
-      if(originalRenderTransactions){
-        renderTransactions = function(){
-          originalRenderTransactions();
-          setTimeout(attachDeleteButtonsToTransactionRows, 0);
-        };
-        setTimeout(attachDeleteButtonsToTransactionRows, 0);
-      }else{
-        setTimeout(attachDeleteButtonsToTransactionRows, 0);
-      }
-
-
-      // One-time per-device ledger migration.
-      // This clears stale browser-local test data on first load of this version only.
-      const DEVICE_LEDGER_MIGRATION_VERSION = "mobile-sync-seed-390-2026-08-28-v3";
-      const DEVICE_LEDGER_SEED = [{"name": "Ники", "type": "deposit", "amount": 100.0, "date": "2026-08-21"}, {"name": "Ники", "type": "deposit", "amount": 60.0, "date": "2026-08-22"}, {"name": "Айвъри", "type": "deposit", "amount": 20.0, "date": "2026-08-25"}, {"name": "Ники", "type": "deposit", "amount": 210.0, "date": "2026-08-26"}];
-
-      (function migratePrivateLedgerPerDevice(){
-        const resetKey = "nikiAveryLedgerResetVersion";
-        const currentVersion = localStorage.getItem(resetKey);
-
-        if(currentVersion !== DEVICE_LEDGER_MIGRATION_VERSION){
-          localStorage.removeItem("nikiAveryTransactions");
-          localStorage.removeItem("nikiAverySharedBalance");
-
-          localStorage.setItem("nikiAveryTransactions", JSON.stringify(DEVICE_LEDGER_SEED));
-          localStorage.setItem("nikiAverySharedBalance", "390.00");
-          localStorage.setItem(resetKey, DEVICE_LEDGER_MIGRATION_VERSION);
-        }
-      })();
-</script>
-
   <div id="emailToast" class="email-toast" role="status" aria-live="polite"></div>
 
 <div id="sessionExpiredMessage" class="pin-expired-message" hidden>Session expired. Please enter the PIN again.</div>
@@ -2341,6 +1257,151 @@
       </form>
     </div>
   </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async function(){
+  "use strict";
+  const PIN="248624", SESSION_MS=120000;
+  const SB_URL="https://rmwivkbsyelztrllxoed.supabase.co";
+  const SB_KEY="sb_publishable_8wESBdceigGNxLODM5jT_w_dLF8eUo9";
+  const FORMSPREE="https://formspree.io/f/myeyyzvg";
+  const NOTICE_EMAIL="minkov_n@icloud.com";
+  const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+  const $=id=>document.getElementById(id);
+  const lockView=$("lockView"), accountView=$("accountView"), pinInput=$("pinInput"),
+        unlockBtn=$("unlockBtn"), pinMessage=$("pinMessage"), mainBalance=$("mainBalance"),
+        savedBalance=$("savedBalance"), cardBalance=$("cardBalance"), activityBalance=$("activityBalance"),
+        transactionsList=$("transactionsList"), emptyTransactions=$("emptyTransactions"),
+        modal=$("moneyModal"), form=$("moneyForm"), personName=$("personName"), moneyAmount=$("moneyAmount"),
+        transactionDate=$("transactionDate"), modalTitle=$("moneyModalTitle"),
+        modalDescription=$("moneyModalDescription"), confirmMoneyBtn=$("confirmMoneyBtn"),
+        modalError=$("modalError"), emailToast=$("emailToast");
+
+  let txType="deposit", rows=[], pinTimer=null, channel=null, unlocked=false;
+
+  // Supabase login is required once per browser/device; the existing PIN remains the frequent privacy lock.
+  const auth=document.createElement("div");
+  auth.id="backendAuthGate";
+  auth.innerHTML=`<div style="min-height:72vh;display:flex;align-items:center;justify-content:center">
+    <div class="lock-card"><div class="lock-icon">🔐</div><h1>Our Account</h1>
+    <p>Secure account sign in</p>
+    <form id="backendLoginForm" style="margin-top:24px">
+      <input id="backendEmail" class="pin-input" style="letter-spacing:0;text-align:left;margin-bottom:12px" type="email" autocomplete="username" placeholder="Email" required>
+      <input id="backendPassword" class="pin-input" style="letter-spacing:0;text-align:left" type="password" autocomplete="current-password" placeholder="Password" required>
+      <button class="btn primary" style="width:100%;margin-top:14px" type="submit">Sign In</button>
+      <div id="backendAuthError" class="pin-message"></div>
+    </form></div></div>`;
+  const shell=document.querySelector(".private-shell");
+  shell.insertBefore(auth,shell.firstChild);
+
+  function eur(v){return "€"+Number(v).toFixed(2)}
+  function fmtDate(d){const a=(d||"").split("-");return a.length===3?`${a[2]}.${a[1]}.${a[0]}`:d}
+  function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+  function balance(){return rows.reduce((n,t)=>n+(t.type==="withdrawal"?-Number(t.amount):Number(t.amount)),0)}
+
+  function hardLock(expired=false){
+    unlocked=false; sessionStorage.removeItem("privateUnlocked"); sessionStorage.removeItem("privateSessionStartedAt");
+    clearTimeout(pinTimer); accountView.classList.remove("show"); accountView.style.display="none";
+    lockView.style.display="flex"; pinInput.value=""; pinMessage.textContent=expired?"Session expired. Please enter the PIN again.":"";
+  }
+  function armTimer(){clearTimeout(pinTimer);pinTimer=setTimeout(()=>hardLock(true),SESSION_MS)}
+  function unlock(){
+    if(pinInput.value!==PIN){pinMessage.textContent="Incorrect PIN.";pinInput.value="";pinInput.focus();return}
+    unlocked=true; sessionStorage.setItem("privateUnlocked","1");sessionStorage.setItem("privateSessionStartedAt",String(Date.now()));
+    lockView.style.display="none";accountView.style.display="block";accountView.classList.add("show");pinMessage.textContent="";armTimer();loadRows();
+  }
+  unlockBtn.addEventListener("click",unlock); pinInput.addEventListener("keydown",e=>{if(e.key==="Enter")unlock()});
+  document.addEventListener("visibilitychange",()=>{if(document.hidden&&unlocked)hardLock(false)});
+  window.addEventListener("pagehide",()=>hardLock(false));
+
+  function render(){
+    const b=balance(); [mainBalance,savedBalance,cardBalance,activityBalance].forEach(el=>{if(el)el.textContent=eur(b)});
+    transactionsList.innerHTML="";
+    if(!rows.length){emptyTransactions.style.display="block";return} emptyTransactions.style.display="none";
+    [...rows].sort((a,b)=>b.transaction_date.localeCompare(a.transaction_date)||b.id-a.id).forEach(t=>{
+      const row=document.createElement("div");row.className="transaction-entry"+(t.type==="withdrawal"?" withdrawal":"");
+      row.innerHTML=`<div class="transaction-icon">${t.type==="withdrawal"?"↘":"↗"}</div>
+      <div><div class="transaction-person"></div><div class="transaction-meta">${t.type==="withdrawal"?"Withdrawal":"Deposit"} · ${fmtDate(t.transaction_date)}</div></div>
+      <div class="transaction-value">${t.type==="withdrawal"?"−":"+"}${eur(t.amount)}</div>`;
+      row.querySelector(".transaction-person").textContent=t.name;
+      const del=document.createElement("button");del.type="button";del.className="transaction-delete-btn";del.textContent="Delete";del.onclick=()=>openDelete(t);
+      row.appendChild(del);transactionsList.appendChild(row);
+    });
+  }
+  async function loadRows(){
+    const {data,error}=await sb.from("transactions").select("id,name,type,amount,transaction_date,created_at");
+    if(error){alert("Backend error: "+error.message);return} rows=data||[];render();
+  }
+
+  function toast(msg,ok){if(!emailToast)return;emailToast.textContent=msg;emailToast.className="email-toast "+(ok?"success":"error")+" show";setTimeout(()=>emailToast.classList.remove("show"),4200)}
+  async function mail(payload){try{const r=await fetch(FORMSPREE,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(payload)});return r.ok}catch(e){return false}}
+
+  function openMoney(type){
+    txType=type;form.reset();transactionDate.value=today();modalError.textContent="";
+    modalTitle.textContent=type==="withdrawal"?"Withdraw Money":"Add Money";
+    modalDescription.textContent=type==="withdrawal"?"Enter who is withdrawing the money, the amount, and the date.":"Enter who is adding the money, the amount, and the date.";
+    confirmMoneyBtn.textContent=modalTitle.textContent;modal.classList.add("show");modal.setAttribute("aria-hidden","false");
+  }
+  $("openAddModal").onclick=()=>openMoney("deposit");$("openWithdrawModal").onclick=()=>openMoney("withdrawal");
+  document.querySelectorAll("[data-close-modal]").forEach(x=>x.onclick=()=>{modal.classList.remove("show");modal.setAttribute("aria-hidden","true")});
+
+  form.addEventListener("submit",async e=>{
+    e.preventDefault();const name=personName.value.trim(), amount=Number(moneyAmount.value), date=transactionDate.value;
+    if(!name||!Number.isFinite(amount)||amount<=0||!date){modalError.textContent="Please complete all transaction details.";return}
+    if(txType==="withdrawal"&&amount>balance()){modalError.textContent="Insufficient balance.";return}
+    confirmMoneyBtn.disabled=true;
+    const {error}=await sb.from("transactions").insert({name,type:txType,amount:Number(amount.toFixed(2)),transaction_date:date});
+    confirmMoneyBtn.disabled=false;
+    if(error){modalError.textContent=error.message;return}
+    await loadRows();modal.classList.remove("show");modal.setAttribute("aria-hidden","true");
+    if(txType==="deposit") $("motivationOverlay").hidden=false;
+    else {$("withdrawNoticeName").textContent=name;$("withdrawNoticeAmount").textContent=eur(amount);$("withdrawNoticeOverlay").hidden=false}
+    const ok=await mail({subject:"Our Account – "+(txType==="withdrawal"?"Withdraw Money":"Add Money"),notification_destination:NOTICE_EMAIL,transaction:txType,name,amount:eur(amount),date:fmtDate(date),new_balance:eur(balance())});
+    toast(ok?"Email sent successfully.":"Transaction saved, but email notification failed.",ok);
+  });
+
+  $("motivationClose").onclick=()=>$("motivationOverlay").hidden=true;
+  $("withdrawNoticeClose").onclick=()=>$("withdrawNoticeOverlay").hidden=true;
+  $("motivationOverlay").onclick=e=>{if(e.target===$("motivationOverlay"))e.currentTarget.hidden=true};
+  $("withdrawNoticeOverlay").onclick=e=>{if(e.target===$("withdrawNoticeOverlay"))e.currentTarget.hidden=true};
+
+  let deleting=null;
+  const delOverlay=$("deleteTransactionOverlay");
+  function openDelete(t){deleting=t;$("deleteTransactionSummary").textContent=`${t.name} ${t.type==="withdrawal"?"-":"+"}${eur(t.amount)} — ${fmtDate(t.transaction_date)}`;$("deleteTransactionName").value="";$("deleteTransactionReason").value="";delOverlay.hidden=false}
+  function closeDelete(){deleting=null;delOverlay.hidden=true}
+  $("deleteTransactionClose").onclick=closeDelete;$("deleteTransactionCancel").onclick=closeDelete;
+  delOverlay.onclick=e=>{if(e.target===delOverlay)closeDelete()};
+  $("deleteTransactionForm").addEventListener("submit",async e=>{
+    e.preventDefault();if(!deleting)return;
+    const by=$("deleteTransactionName").value.trim(), reason=$("deleteTransactionReason").value.trim();
+    if(!by||!reason){alert("Please complete Name and Reason.");return}
+    if(!confirm("Delete this transaction?"))return;
+    const old=balance(), impact=deleting.type==="withdrawal"?-Number(deleting.amount):Number(deleting.amount), next=old-impact;
+    const ok=await mail({subject:"Our Account – Transaction Deletion",notification_destination:NOTICE_EMAIL,deleted_by:by,reason,transaction_owner:deleting.name,transaction_type:deleting.type,transaction_amount:eur(deleting.amount),transaction_date:fmtDate(deleting.transaction_date),previous_balance:eur(old),new_balance:eur(next)});
+    if(!ok){alert("Transaction was NOT deleted because the email notification could not be sent.");return}
+    const {error}=await sb.from("transactions").delete().eq("id",deleting.id);
+    if(error){alert("Delete failed: "+error.message);return}closeDelete();await loadRows();alert("Transaction deleted. Notification email sent.");
+  });
+
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!delOverlay.hidden)closeDelete();$("motivationOverlay").hidden=true;$("withdrawNoticeOverlay").hidden=true;if(modal.classList.contains("show")){modal.classList.remove("show");modal.setAttribute("aria-hidden","true")}}});
+
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){auth.style.display="none";lockView.style.display="flex";accountView.style.display="none"}
+  else{auth.style.display="block";lockView.style.display="none";accountView.style.display="none"}
+
+  $("backendLoginForm").addEventListener("submit",async e=>{
+    e.preventDefault();const err=$("backendAuthError");err.textContent="Signing in…";
+    const {error}=await sb.auth.signInWithPassword({email:$("backendEmail").value.trim(),password:$("backendPassword").value});
+    if(error){err.textContent=error.message;return}
+    $("backendPassword").value="";auth.style.display="none";lockView.style.display="flex";accountView.style.display="none";pinInput.focus();
+  });
+
+  channel=sb.channel("private-transactions-live").on("postgres_changes",{event:"*",schema:"public",table:"transactions"},()=>loadRows()).subscribe();
+})();
+</script>
 
 </body>
 </html>
