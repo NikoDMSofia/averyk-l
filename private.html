@@ -1057,6 +1057,26 @@
 
 </style>
 
+
+<style id="averyAccountBadgeStyle">
+.avery-account-badge{
+  position:fixed;
+  right:14px;
+  top:14px;
+  z-index:9999;
+  padding:7px 11px;
+  border-radius:999px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.28);
+  color:#fff;
+  font:600 12px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:.02em;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  box-shadow:0 6px 18px rgba(0,0,0,.18);
+}
+</style>
+
 </head>
 <body>
   <header>
@@ -1282,6 +1302,17 @@
 
   let txType="deposit", rows=[], pinTimer=null, channel=null, unlocked=false, currentUserId=null;
   const NIKI_UID="47f3c30f-c570-4355-bbdc-971c47a5441e";
+  function applyAccountBadge(){
+    const old=document.getElementById("averyAccountBadge");
+    if(old) old.remove();
+    if(currentUserId && currentUserId!==NIKI_UID){
+      const badge=document.createElement("div");
+      badge.id="averyAccountBadge";
+      badge.className="avery-account-badge";
+      badge.textContent="Avery Account";
+      document.body.appendChild(badge);
+    }
+  }
 
   // Supabase login is required once per browser/device; the existing PIN remains the frequent privacy lock.
   const auth=document.createElement("div");
