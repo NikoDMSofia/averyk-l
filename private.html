@@ -1077,6 +1077,10 @@
 }
 </style>
 
+
+<style id="guestViewOnlyStyle">
+.guest-view-badge{position:fixed;right:14px;top:14px;z-index:9999;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;font:600 12px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,.18)}
+</style>
 </head>
 <body>
   <header>
@@ -1283,7 +1287,7 @@
 <script>
 (async function(){
   "use strict";
-  const PIN="248624", SESSION_MS=120000;
+  const PIN="248624", SESSION_MS=600000;
   const SB_URL="https://rmwivkbsyelztrllxoed.supabase.co";
   const SB_KEY="sb_publishable_8wESBdceigGNxLODM5jT_w_dLF8eUo9";
   const FORMSPREE="https://formspree.io/f/myeyyzvg";
@@ -1300,7 +1304,7 @@
         modalDescription=$("moneyModalDescription"), confirmMoneyBtn=$("confirmMoneyBtn"),
         modalError=$("modalError"), emailToast=$("emailToast");
 
-  let txType="deposit", rows=[], pinTimer=null, channel=null, unlocked=false, currentUserId=null;
+  let txType="deposit", rows=[], pinTimer=null, channel=null, unlocked=false, currentUserId=null, guestMode=false;
   const NIKI_UID="47f3c30f-c570-4355-bbdc-971c47a5441e";
   function applyAccountBadge(){
     const old=document.getElementById("averyAccountBadge");
@@ -1325,7 +1329,13 @@
       <input id="backendPassword" class="pin-input" style="letter-spacing:0;text-align:left" type="password" autocomplete="current-password" placeholder="Password" required>
       <button class="btn primary" style="width:100%;margin-top:14px" type="submit">Sign In</button>
       <div id="backendAuthError" class="pin-message"></div>
-    </form></div></div>`;
+    </form>
+    <div style="display:flex;align-items:center;gap:12px;margin:18px 0 14px;color:rgba(255,255,255,.55);font-size:12px">
+      <span style="height:1px;background:rgba(255,255,255,.18);flex:1"></span><span>or</span><span style="height:1px;background:rgba(255,255,255,.18);flex:1"></span>
+    </div>
+    <button id="guestViewBtn" class="btn" style="width:100%" type="button">View only</button>
+    <p style="margin:10px 0 0;font-size:12px;opacity:.68">Guest access · viewing only</p>
+    </div></div>`;
   const shell=document.querySelector(".private-shell");
   shell.insertBefore(auth,shell.firstChild);
 
@@ -1334,7 +1344,29 @@
   function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
   function balance(){return rows.reduce((n,t)=>n+(t.type==="withdrawal"?-Number(t.amount):Number(t.amount)),0)}
 
+  function enterGuestMode(){
+    guestMode=true;
+    currentUserId=null;
+    unlocked=false;
+    clearTimeout(pinTimer);
+    auth.style.display="none";
+    lockView.style.display="none";
+    accountView.style.display="block";
+    accountView.classList.add("show");
+    const addBtn=$("openAddModal"), withdrawBtn=$("openWithdrawModal");
+    if(addBtn) addBtn.style.display="none";
+    if(withdrawBtn) withdrawBtn.style.display="none";
+    const oldBadge=$("guestViewBadge"); if(oldBadge) oldBadge.remove();
+    const badge=document.createElement("div");
+    badge.id="guestViewBadge";
+    badge.className="guest-view-badge";
+    badge.textContent="Guest · View only";
+    document.body.appendChild(badge);
+    loadRows();
+  }
+
   function hardLock(expired=false){
+    if(guestMode) return;
     unlocked=false; sessionStorage.removeItem("privateUnlocked"); sessionStorage.removeItem("privateSessionStartedAt");
     clearTimeout(pinTimer); accountView.classList.remove("show"); accountView.style.display="none";
     lockView.style.display="flex"; pinInput.value=""; pinMessage.textContent=expired?"Session expired. Please enter the PIN again.":"";
@@ -1343,7 +1375,7 @@
   function unlock(){
     if(pinInput.value!==PIN){pinMessage.textContent="Incorrect PIN.";pinInput.value="";pinInput.focus();return}
     unlocked=true; sessionStorage.setItem("privateUnlocked","1");sessionStorage.setItem("privateSessionStartedAt",String(Date.now()));
-    lockView.style.display="none";accountView.style.display="block";accountView.classList.add("show");pinMessage.textContent="";armTimer();loadRows();
+    lockView.style.display="none";syncOwnerChipOrder();accountView.style.display="block";accountView.classList.add("show");pinMessage.textContent="";armTimer();loadRows();
   }
   unlockBtn.addEventListener("click",unlock); pinInput.addEventListener("keydown",e=>{if(e.key==="Enter")unlock()});
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&unlocked)hardLock(false)});
@@ -1380,8 +1412,29 @@
   function toast(msg,ok){if(!emailToast)return;emailToast.textContent=msg;emailToast.className="email-toast "+(ok?"success":"error")+" show";setTimeout(()=>emailToast.classList.remove("show"),4200)}
   async function mail(payload){try{const r=await fetch(FORMSPREE,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(payload)});return r.ok}catch(e){return false}}
 
+  
+  function syncOwnerChipOrder(){
+    const owners=document.querySelector(".owners");
+    if(!owners) return;
+    const chips=[...owners.querySelectorAll(".owner-chip")];
+    const niki=chips.find(el=>el.textContent.trim()==="Niki");
+    const avery=chips.find(el=>el.textContent.trim()==="Avery");
+    const shared=chips.find(el=>el.textContent.trim()==="Shared account");
+    if(!niki||!avery||!shared) return;
+
+    owners.innerHTML="";
+    if(currentUserId===NIKI_UID){
+      owners.append(niki,avery,shared);
+    }else{
+      owners.append(avery,niki,shared);
+    }
+  }
+
   function openMoney(type){
+    if(guestMode) return;
     txType=type;form.reset();transactionDate.value=today();modalError.textContent="";
+    personName.value=currentUserId===NIKI_UID?"Ники":"Avery";
+    personName.readOnly=true;
     modalTitle.textContent=type==="withdrawal"?"Withdraw Money":"Add Money";
     modalDescription.textContent=type==="withdrawal"?"Enter who is withdrawing the money, the amount, and the date.":"Enter who is adding the money, the amount, and the date.";
     confirmMoneyBtn.textContent=modalTitle.textContent;modal.classList.add("show");modal.setAttribute("aria-hidden","false");
@@ -1390,7 +1443,7 @@
   document.querySelectorAll("[data-close-modal]").forEach(x=>x.onclick=()=>{modal.classList.remove("show");modal.setAttribute("aria-hidden","true")});
 
   form.addEventListener("submit",async e=>{
-    e.preventDefault();const name=personName.value.trim(), amount=Number(moneyAmount.value), date=transactionDate.value;
+    e.preventDefault();if(guestMode)return;const name=currentUserId===NIKI_UID?"Ники":"Avery", amount=Number(moneyAmount.value), date=transactionDate.value;
     if(!name||!Number.isFinite(amount)||amount<=0||!date){modalError.textContent="Please complete all transaction details.";return}
     if(txType==="withdrawal"&&amount>balance()){modalError.textContent="Insufficient balance.";return}
     confirmMoneyBtn.disabled=true;
@@ -1411,7 +1464,7 @@
 
   let deleting=null;
   const delOverlay=$("deleteTransactionOverlay");
-  function openDelete(t){deleting=t;$("deleteTransactionSummary").textContent=`${t.name} ${t.type==="withdrawal"?"-":"+"}${eur(t.amount)} — ${fmtDate(t.transaction_date)}`;$("deleteTransactionName").value="";$("deleteTransactionReason").value="";delOverlay.hidden=false}
+  function openDelete(t){if(guestMode)return;deleting=t;$("deleteTransactionSummary").textContent=`${t.name} ${t.type==="withdrawal"?"-":"+"}${eur(t.amount)} — ${fmtDate(t.transaction_date)}`;$("deleteTransactionName").value="";$("deleteTransactionReason").value="";delOverlay.hidden=false}
   function closeDelete(){deleting=null;delOverlay.hidden=true}
   $("deleteTransactionClose").onclick=closeDelete;$("deleteTransactionCancel").onclick=closeDelete;
   delOverlay.onclick=e=>{if(e.target===delOverlay)closeDelete()};
@@ -1430,8 +1483,10 @@
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!delOverlay.hidden)closeDelete();$("motivationOverlay").hidden=true;$("withdrawNoticeOverlay").hidden=true;if(modal.classList.contains("show")){modal.classList.remove("show");modal.setAttribute("aria-hidden","true")}}});
 
   const {data:{session}}=await sb.auth.getSession();
-  if(session){currentUserId=session.user?.id||null;applyProfileIdentity();auth.style.display="none";lockView.style.display="flex";accountView.style.display="none"}
+  if(session){currentUserId=session.user?.id||null;syncOwnerChipOrder();applyProfileIdentity();auth.style.display="none";lockView.style.display="flex";accountView.style.display="none"}
   else{auth.style.display="block";lockView.style.display="none";accountView.style.display="none"}
+
+  $("guestViewBtn").addEventListener("click",enterGuestMode);
 
   $("backendLoginForm").addEventListener("submit",async e=>{
     e.preventDefault();const err=$("backendAuthError");err.textContent="Signing in…";
