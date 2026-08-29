@@ -1081,6 +1081,17 @@
 <style id="guestViewOnlyStyle">
 .guest-view-badge{position:fixed;right:14px;top:14px;z-index:9999;padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;font:600 12px/1.2 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,.18)}
 </style>
+
+<style id="goalsFeatureStyle">
+.total-capital-note{margin-top:7px;font-size:12px;line-height:1.4;color:rgba(255,255,255,.68);letter-spacing:.01em}
+.total-capital-note strong{color:#fff;font-weight:700}
+.goals-card{margin-top:22px;padding:24px;border-radius:24px;background:linear-gradient(145deg,rgba(12,35,67,.96),rgba(8,25,49,.96));border:1px solid rgba(255,255,255,.10);box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.goals-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px}
+.goals-head h3{margin:4px 0 0}.goals-total{text-align:right}.goals-total span{display:block;font-size:11px;color:rgba(255,255,255,.58);text-transform:uppercase;letter-spacing:.08em}.goals-total strong{display:block;margin-top:3px;font-size:20px;color:#fff}
+.goals-list{display:grid;gap:12px}.goal-entry{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:13px;padding:15px 16px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}
+.goal-entry-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,.08);font-size:18px}.goal-entry-title{font-weight:700;color:#fff}.goal-entry-meta{margin-top:3px;font-size:12px;color:rgba(255,255,255,.62)}.goal-entry-amount{text-align:right;font-weight:800;color:#fff}.goal-entry-status{display:block;margin-top:4px;font-size:11px;font-weight:700}.goal-entry.achieved .goal-entry-status{color:#62d58b}.goal-entry.pending .goal-entry-status{color:#e8c56a}.goals-empty{padding:16px;text-align:center;color:rgba(255,255,255,.6);font-size:13px}
+@media(max-width:700px){.goals-head{align-items:flex-start;flex-direction:column}.goals-total{text-align:left}.goal-entry{grid-template-columns:auto 1fr}.goal-entry-amount{grid-column:2;text-align:left}}
+</style>
 </head>
 <body>
   <header>
@@ -1123,7 +1134,8 @@
           <div>
             <div class="eyebrow">Current shared balance</div>
             <div class="balance" id="mainBalance">€500.00</div>
-            <div class="balance-note">Saved together so far</div>
+            <div class="balance-note">Available shared balance</div>
+            <div class="total-capital-note">Total capital: <strong id="totalCapital">€500.00</strong></div>
           </div>
 
           <div class="owners">
@@ -1180,6 +1192,22 @@
           <p class="muted">Current amount saved together.</p>
         </article>
       </div>
+
+      <article class="goals-card" id="goalsCard">
+        <div class="goals-head">
+          <div>
+            <div class="eyebrow">Goals</div>
+            <h3>Goals</h3>
+            <p class="muted">Money reserved for goals stays part of the total capital.</p>
+          </div>
+          <div class="goals-total">
+            <span>Total in Goals</span>
+            <strong id="goalsTotal">€0.00</strong>
+          </div>
+        </div>
+        <div id="goalsList" class="goals-list"></div>
+        <div id="emptyGoals" class="goals-empty" style="display:none">No goals yet.</div>
+      </article>
 
       <article class="activity-card">
         <div class="eyebrow">Account activity</div>
@@ -1302,9 +1330,10 @@
         modal=$("moneyModal"), form=$("moneyForm"), personName=$("personName"), moneyAmount=$("moneyAmount"),
         transactionDate=$("transactionDate"), modalTitle=$("moneyModalTitle"),
         modalDescription=$("moneyModalDescription"), confirmMoneyBtn=$("confirmMoneyBtn"),
-        modalError=$("modalError"), emailToast=$("emailToast");
+        modalError=$("modalError"), emailToast=$("emailToast"), totalCapital=$("totalCapital"),
+        goalsTotal=$("goalsTotal"), goalsList=$("goalsList"), emptyGoals=$("emptyGoals");
 
-  let txType="deposit", rows=[], pinTimer=null, channel=null, unlocked=false, currentUserId=null, guestMode=false;
+  let txType="deposit", rows=[], goals=[], pinTimer=null, channel=null, goalsChannel=null, unlocked=false, currentUserId=null, guestMode=false;
   const NIKI_UID="47f3c30f-c570-4355-bbdc-971c47a5441e";
   function applyAccountBadge(){
     const old=document.getElementById("averyAccountBadge");
@@ -1341,8 +1370,11 @@
 
   function eur(v){return "€"+Number(v).toFixed(2)}
   function fmtDate(d){const a=(d||"").split("-");return a.length===3?`${a[2]}.${a[1]}.${a[0]}`:d}
+  function fmtTime(ts){if(!ts)return "--:--";const d=new Date(ts);return Number.isNaN(d.getTime())?"--:--":new Intl.DateTimeFormat("en-GB",{hour:"2-digit",minute:"2-digit",hour12:false}).format(d)}
   function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
-  function balance(){return rows.reduce((n,t)=>n+(t.type==="withdrawal"?-Number(t.amount):Number(t.amount)),0)}
+  function transactionBalance(){return rows.reduce((n,t)=>n+(t.type==="withdrawal"?-Number(t.amount):Number(t.amount)),0)}
+  function goalsAllocated(){return goals.filter(g=>g.status==="achieved").reduce((n,g)=>n+Number(g.allocated_amount||0),0)}
+  function balance(){return transactionBalance()-goalsAllocated()}
 
   function enterGuestMode(){
     guestMode=true;
@@ -1387,14 +1419,36 @@
     document.querySelectorAll(".info-value").forEach(el=>{if(el.textContent.trim()==="Niki & Avery"||el.textContent.trim()==="Avery & Niki")el.textContent=avery?"Avery & Niki":"Niki & Avery"});
   }
 
+  function renderGoals(){
+    const allocated=goalsAllocated();
+    if(goalsTotal) goalsTotal.textContent=eur(allocated);
+    if(!goalsList) return;
+    goalsList.innerHTML="";
+    if(!goals.length){if(emptyGoals)emptyGoals.style.display="block";return}
+    if(emptyGoals)emptyGoals.style.display="none";
+    [...goals].sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)||a.id-b.id).forEach(g=>{
+      const achieved=g.status==="achieved";
+      const row=document.createElement("div");row.className="goal-entry "+(achieved?"achieved":"pending");
+      row.innerHTML=`<div class="goal-entry-icon">🎯</div><div><div class="goal-entry-title"></div><div class="goal-entry-meta"></div></div><div class="goal-entry-amount"></div>`;
+      row.querySelector(".goal-entry-title").textContent=g.title;
+      row.querySelector(".goal-entry-meta").innerHTML=achieved?'Reserved in Goals · <span class="goal-entry-status">Goal reached</span>':'Waiting to be reached · <span class="goal-entry-status">In progress</span>';
+      row.querySelector(".goal-entry-amount").textContent=eur(achieved?g.allocated_amount:g.target_amount);
+      goalsList.appendChild(row);
+    });
+  }
+
   function render(){
-    const b=balance(); [mainBalance,savedBalance,cardBalance,activityBalance].forEach(el=>{if(el)el.textContent=eur(b)});
+    const b=balance(), total=transactionBalance();
+    [mainBalance,cardBalance,activityBalance].forEach(el=>{if(el)el.textContent=eur(b)});
+    if(savedBalance)savedBalance.textContent=eur(b);
+    if(totalCapital)totalCapital.textContent=eur(total);
+    renderGoals();
     transactionsList.innerHTML="";
     if(!rows.length){emptyTransactions.style.display="block";return} emptyTransactions.style.display="none";
     [...rows].sort((a,b)=>b.transaction_date.localeCompare(a.transaction_date)||b.id-a.id).forEach(t=>{
       const row=document.createElement("div");row.className="transaction-entry"+(t.type==="withdrawal"?" withdrawal":"");
       row.innerHTML=`<div class="transaction-icon">${t.type==="withdrawal"?"↘":"↗"}</div>
-      <div><div class="transaction-person"></div><div class="transaction-meta">${t.type==="withdrawal"?"Withdrawal":"Deposit"} · ${fmtDate(t.transaction_date)}</div></div>
+      <div><div class="transaction-person"></div><div class="transaction-meta">${t.type==="withdrawal"?"Withdrawal":"Deposit"} · ${fmtDate(t.transaction_date)} · ${fmtTime(t.created_at)}</div></div>
       <div class="transaction-value">${t.type==="withdrawal"?"−":"+"}${eur(t.amount)}</div>`;
       row.querySelector(".transaction-person").textContent=t.name;
       if(currentUserId===NIKI_UID){
@@ -1405,8 +1459,13 @@
     });
   }
   async function loadRows(){
-    const {data,error}=await sb.from("transactions").select("id,name,type,amount,transaction_date,created_at");
-    if(error){alert("Backend error: "+error.message);return} rows=data||[];render();
+    const [txRes,goalRes]=await Promise.all([
+      sb.from("transactions").select("id,name,type,amount,transaction_date,created_at"),
+      sb.from("goals").select("id,title,target_amount,allocated_amount,status,sort_order,achieved_at,created_at")
+    ]);
+    if(txRes.error){alert("Backend error: "+txRes.error.message);return}
+    if(goalRes.error){alert("Goals backend error: "+goalRes.error.message);return}
+    rows=txRes.data||[];goals=goalRes.data||[];render();
   }
 
   function toast(msg,ok){if(!emailToast)return;emailToast.textContent=msg;emailToast.className="email-toast "+(ok?"success":"error")+" show";setTimeout(()=>emailToast.classList.remove("show"),4200)}
@@ -1453,7 +1512,7 @@
     await loadRows();modal.classList.remove("show");modal.setAttribute("aria-hidden","true");
     if(txType==="deposit") $("motivationOverlay").hidden=false;
     else {$("withdrawNoticeName").textContent=name;$("withdrawNoticeAmount").textContent=eur(amount);$("withdrawNoticeOverlay").hidden=false}
-    const ok=await mail({subject:"Our Account – "+(txType==="withdrawal"?"Withdraw Money":"Add Money"),notification_destination:NOTICE_EMAIL,transaction:txType,name,amount:eur(amount),date:fmtDate(date),new_balance:eur(balance())});
+    const ok=await mail({subject:"Our Account – "+(txType==="withdrawal"?"Withdraw Money":"Add Money"),notification_destination:NOTICE_EMAIL,transaction:txType,name,amount:eur(amount),date:fmtDate(date),time:new Intl.DateTimeFormat("en-GB",{hour:"2-digit",minute:"2-digit",hour12:false}).format(new Date()),new_balance:eur(balance())});
     toast(ok?"Email sent successfully.":"Transaction saved, but email notification failed.",ok);
   });
 
@@ -1464,7 +1523,7 @@
 
   let deleting=null;
   const delOverlay=$("deleteTransactionOverlay");
-  function openDelete(t){if(guestMode)return;deleting=t;$("deleteTransactionSummary").textContent=`${t.name} ${t.type==="withdrawal"?"-":"+"}${eur(t.amount)} — ${fmtDate(t.transaction_date)}`;$("deleteTransactionName").value="";$("deleteTransactionReason").value="";delOverlay.hidden=false}
+  function openDelete(t){if(guestMode)return;deleting=t;$("deleteTransactionSummary").textContent=`${t.name} ${t.type==="withdrawal"?"-":"+"}${eur(t.amount)} — ${fmtDate(t.transaction_date)} · ${fmtTime(t.created_at)}`;$("deleteTransactionName").value="";$("deleteTransactionReason").value="";delOverlay.hidden=false}
   function closeDelete(){deleting=null;delOverlay.hidden=true}
   $("deleteTransactionClose").onclick=closeDelete;$("deleteTransactionCancel").onclick=closeDelete;
   delOverlay.onclick=e=>{if(e.target===delOverlay)closeDelete()};
@@ -1474,7 +1533,7 @@
     if(!by||!reason){alert("Please complete Name and Reason.");return}
     if(!confirm("Delete this transaction?"))return;
     const old=balance(), impact=deleting.type==="withdrawal"?-Number(deleting.amount):Number(deleting.amount), next=old-impact;
-    const ok=await mail({subject:"Our Account – Transaction Deletion",notification_destination:NOTICE_EMAIL,deleted_by:by,reason,transaction_owner:deleting.name,transaction_type:deleting.type,transaction_amount:eur(deleting.amount),transaction_date:fmtDate(deleting.transaction_date),previous_balance:eur(old),new_balance:eur(next)});
+    const ok=await mail({subject:"Our Account – Transaction Deletion",notification_destination:NOTICE_EMAIL,deleted_by:by,reason,transaction_owner:deleting.name,transaction_type:deleting.type,transaction_amount:eur(deleting.amount),transaction_date:fmtDate(deleting.transaction_date),transaction_time:fmtTime(deleting.created_at),previous_balance:eur(old),new_balance:eur(next)});
     if(!ok){alert("Transaction was NOT deleted because the email notification could not be sent.");return}
     const {error}=await sb.from("transactions").delete().eq("id",deleting.id);
     if(error){alert("Delete failed: "+error.message);return}closeDelete();await loadRows();alert("Transaction deleted. Notification email sent.");
@@ -1497,6 +1556,7 @@
   });
 
   channel=sb.channel("private-transactions-live").on("postgres_changes",{event:"*",schema:"public",table:"transactions"},()=>loadRows()).subscribe();
+  goalsChannel=sb.channel("private-goals-live").on("postgres_changes",{event:"*",schema:"public",table:"goals"},()=>loadRows()).subscribe();
 })();
 </script>
 
