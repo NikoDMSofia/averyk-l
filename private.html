@@ -1055,7 +1055,7 @@
     .delete-transaction-cancel{background:rgba(255,255,255,.10);color:#fff;}
     .delete-transaction-confirm{background:#b6283f;color:#fff;}
 
-</style>
+.visitors-clear-wrap{padding:12px 22px 18px;border-top:1px solid rgba(255,255,255,.09);display:flex;justify-content:flex-end}.visitors-clear-btn{border:1px solid rgba(255,100,100,.35);background:rgba(150,30,30,.18);color:#ffb6b6;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}.visitors-clear-btn:disabled{opacity:.5;cursor:default}</style>
 
 
 <style id="averyAccountBadgeStyle">
@@ -1088,12 +1088,39 @@
 .goals-card{margin-top:22px;padding:24px;border-radius:24px;background:linear-gradient(145deg,rgba(12,35,67,.96),rgba(8,25,49,.96));border:1px solid rgba(255,255,255,.10);box-shadow:0 18px 50px rgba(0,0,0,.18)}
 .goals-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px}
 .goals-head h3{margin:4px 0 0}.goals-total{text-align:right}.goals-total span{display:block;font-size:11px;color:rgba(255,255,255,.58);text-transform:uppercase;letter-spacing:.08em}.goals-total strong{display:block;margin-top:3px;font-size:20px;color:#fff}
-.goals-list{display:grid;gap:12px}.goal-entry{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:13px;padding:15px 16px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}
-.goal-entry-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,.08);font-size:18px}.goal-entry-title{font-weight:700;color:#fff}.goal-entry-meta{margin-top:3px;font-size:12px;color:rgba(255,255,255,.62)}.goal-entry-amount{text-align:right;font-weight:800;color:#fff}.goal-entry-status{display:block;margin-top:4px;font-size:11px;font-weight:700}.goal-entry.achieved .goal-entry-status{color:#62d58b}.goal-entry.pending .goal-entry-status{color:#e8c56a}.goals-empty{padding:16px;text-align:center;color:rgba(255,255,255,.6);font-size:13px}
+.goals-list{display:grid;gap:12px}.goal-entry{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:13px;padding:15px 16px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.goal-entry-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,.08);font-size:18px}.goal-entry-title{font-weight:700;color:#fff}.goal-entry-meta{margin-top:3px;font-size:12px;color:rgba(255,255,255,.62)}.goal-entry-amount{text-align:right;font-weight:800;color:#fff}.goal-entry-status{display:block;margin-top:4px;font-size:11px;font-weight:700}.goal-entry.pending .goal-entry-status{color:#e8c56a}.goals-empty{padding:16px;text-align:center;color:rgba(255,255,255,.6);font-size:13px}
+.goal-progress{height:6px;margin-top:9px;border-radius:999px;overflow:hidden;background:rgba(255,255,255,.10)}.goal-progress-fill{height:100%;border-radius:inherit;background:rgba(232,197,106,.85);transition:width .45s ease}.goal-progress-text{margin-top:5px;font-size:11px;color:rgba(255,255,255,.56)}
+.goal-entry.achieved{background:linear-gradient(135deg,rgba(28,112,70,.34),rgba(14,70,49,.24));border-color:rgba(98,213,139,.48);box-shadow:0 0 0 1px rgba(98,213,139,.08),0 10px 28px rgba(15,100,60,.14)}.goal-entry.achieved .goal-entry-icon{background:rgba(98,213,139,.16)}.goal-entry.achieved .goal-entry-title,.goal-entry.achieved .goal-entry-status{color:#72e39a}.goal-entry.achieved .goal-entry-amount{color:#8ce7ab}.goal-entry.achieved.goal-celebrate{animation:goalCelebrate 2.6s ease both}@keyframes goalCelebrate{0%,100%{transform:scale(1);box-shadow:0 0 0 1px rgba(98,213,139,.08),0 10px 28px rgba(15,100,60,.14)}35%{transform:scale(1.012);box-shadow:0 0 24px rgba(98,213,139,.36),0 12px 34px rgba(15,100,60,.24)}}.goal-spend-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:8px}.goal-spend-btn{appearance:none;border:1px solid rgba(120,232,160,.62);background:rgba(42,145,89,.22);color:#9af0b8;border-radius:10px;padding:7px 12px;font-size:11px;font-weight:800;letter-spacing:.06em;cursor:pointer;transition:.18s ease}.goal-spend-btn:hover{background:rgba(42,145,89,.34);transform:translateY(-1px)}.goal-spend-btn:disabled{opacity:.55;cursor:wait;transform:none}.goal-entry.spent{background:linear-gradient(135deg,rgba(35,108,73,.28),rgba(9,51,39,.22));border-color:rgba(111,218,153,.38);opacity:.94}.goal-entry.spent .goal-entry-icon{background:rgba(111,218,153,.15)}.goal-entry.spent .goal-entry-title,.goal-entry.spent .goal-entry-status{color:#7fe2a6}.goal-entry.spent .goal-entry-amount{color:#b9f2cf}.goal-entry.spent .goal-entry-meta{color:rgba(255,255,255,.68)}
 @media(max-width:700px){.goals-head{align-items:flex-start;flex-direction:column}.goals-total{text-align:left}.goal-entry{grid-template-columns:auto 1fr}.goal-entry-amount{grid-column:2;text-align:left}}
 </style>
+
+<style id="websiteReturnFloatingStyle">
+.website-return-floating{position:fixed;left:16px;bottom:16px;z-index:10050;display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:rgba(8,32,63,.88);border:1px solid rgba(255,255,255,.22);color:#fff;text-decoration:none;font:700 12px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em;box-shadow:0 8px 24px rgba(0,0,0,.24);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .18s ease,background .18s ease,box-shadow .18s ease}.website-return-floating:hover{transform:translateY(-2px);background:rgba(12,48,91,.96);box-shadow:0 10px 28px rgba(0,0,0,.3)}.website-return-floating:focus-visible{outline:2px solid #fff;outline-offset:3px}@media(max-width:520px){.website-return-floating{left:12px;bottom:12px;padding:9px 12px;font-size:11px}}
+</style>
+
+<style id="privateVisitorsStyle">
+.visitors-floating{position:fixed;right:16px;bottom:16px;z-index:10050;display:none;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:rgba(8,32,63,.9);border:1px solid rgba(255,255,255,.22);color:#fff;font:700 12px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em;box-shadow:0 8px 24px rgba(0,0,0,.24);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);cursor:pointer;transition:transform .18s ease,background .18s ease}.visitors-floating:hover{transform:translateY(-2px);background:rgba(12,48,91,.96)}
+.visitors-overlay{position:fixed;inset:0;z-index:12000;background:rgba(2,10,22,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}.visitors-overlay.show{display:flex}.visitors-panel{width:min(680px,100%);max-height:min(78vh,760px);display:flex;flex-direction:column;border-radius:24px;background:linear-gradient(145deg,rgba(11,35,68,.99),rgba(6,22,44,.99));border:1px solid rgba(255,255,255,.13);box-shadow:0 24px 70px rgba(0,0,0,.42);overflow:hidden}.visitors-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;border-bottom:1px solid rgba(255,255,255,.09)}.visitors-head h3{margin:2px 0 0;color:#fff}.visitors-head small{color:rgba(255,255,255,.58)}.visitors-close{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;font-size:20px;cursor:pointer}.visitors-list{overflow:auto;padding:10px 14px 16px}.visitor-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:13px 10px;border-bottom:1px solid rgba(255,255,255,.07)}.visitor-row:last-child{border-bottom:0}.visitor-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,.08)}.visitor-name{font-weight:800;color:#fff}.visitor-page{margin-top:3px;font-size:12px;color:rgba(255,255,255,.62)}.visitor-time{text-align:right;font-size:12px;color:rgba(255,255,255,.7);white-space:nowrap}.visitor-empty{padding:28px;text-align:center;color:rgba(255,255,255,.6)}.visitor-avery .visitor-name{color:#82d8ff}.visitor-guest .visitor-name{color:#e7d28a}@media(max-width:520px){.visitors-floating{right:12px;bottom:12px;padding:9px 12px;font-size:11px}.visitor-row{grid-template-columns:auto 1fr}.visitor-time{grid-column:2;text-align:left}}
+</style>
+
 </head>
 <body>
+
+<button id="visitorsFloatingBtn" class="visitors-floating" type="button" aria-label="Open private visitor history">👁 Visitors</button>
+<div id="visitorsOverlay" class="visitors-overlay" aria-hidden="true">
+  <section class="visitors-panel" role="dialog" aria-modal="true" aria-labelledby="visitorsTitle">
+    <div class="visitors-head">
+      <div><small>Private · visible only to Niki</small><h3 id="visitorsTitle">Website Visitors</h3></div>
+      <button id="visitorsClose" class="visitors-close" type="button" aria-label="Close">×</button>
+    </div>
+    <div id="visitorsList" class="visitors-list"><div class="visitor-empty">No visits recorded yet.</div></div>
+    <div class="visitors-clear-wrap"><button id="visitorsClearBtn" class="visitors-clear-btn" type="button">Delete History</button></div>
+  </section>
+</div>
+
+<a class="website-return-floating" href="index.html" aria-label="Return to website home">← Back to Website</a>
+
   <header>
     <nav class="navlinks">
       <a href="index.html">Home</a>
@@ -1335,6 +1362,46 @@
 
   let txType="deposit", rows=[], goals=[], pinTimer=null, channel=null, goalsChannel=null, unlocked=false, currentUserId=null, guestMode=false;
   const NIKI_UID="47f3c30f-c570-4355-bbdc-971c47a5441e";
+
+  const visitorsBtn=$("visitorsFloatingBtn"), visitorsOverlay=$("visitorsOverlay"), visitorsList=$("visitorsList");
+  let visitsChannel=null;
+  function fmtVisitDate(ts){
+    const d=new Date(ts); if(Number.isNaN(d.getTime())) return "";
+    return new Intl.DateTimeFormat("en-GB",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false}).format(d);
+  }
+  function pageLabel(path,title){
+    const names={"index.html":"Home","letter.html":"The Letter","memories.html":"Memories","love-letter.html":"The Love Letter","for-us.html":"For Us","private.html":"Private"};
+    return names[path]||title||path||"Website";
+  }
+  async function loadVisitors(){
+    if(currentUserId!==NIKI_UID) return;
+    const {data,error}=await sb.from("site_visits").select("id,visitor_type,page_path,page_title,visited_at").order("visited_at",{ascending:false}).limit(100);
+    if(error){visitorsList.innerHTML='<div class="visitor-empty">Could not load visitor history.</div>';return}
+    visitorsList.innerHTML="";
+    if(!data?.length){visitorsList.innerHTML='<div class="visitor-empty">No visits recorded yet.</div>';return}
+    data.forEach(v=>{
+      const row=document.createElement("div");
+      row.className="visitor-row "+(v.visitor_type==="Avery"?"visitor-avery":"visitor-guest");
+      row.innerHTML='<div class="visitor-icon"></div><div><div class="visitor-name"></div><div class="visitor-page"></div></div><div class="visitor-time"></div>';
+      row.querySelector(".visitor-icon").textContent=v.visitor_type==="Avery"?"💙":"👤";
+      row.querySelector(".visitor-name").textContent=v.visitor_type;
+      row.querySelector(".visitor-page").textContent=pageLabel(v.page_path,v.page_title);
+      row.querySelector(".visitor-time").textContent=fmtVisitDate(v.visited_at);
+      visitorsList.appendChild(row);
+    });
+  }
+  function syncVisitorsAccess(){
+    const owner=currentUserId===NIKI_UID && !guestMode;
+    if(visitorsBtn) visitorsBtn.style.display=owner?"inline-flex":"none";
+    if(!owner && visitorsOverlay){visitorsOverlay.classList.remove("show");visitorsOverlay.setAttribute("aria-hidden","true")}
+    if(owner && !visitsChannel){
+      visitsChannel=sb.channel("private-site-visits-live").on("postgres_changes",{event:"INSERT",schema:"public",table:"site_visits"},()=>loadVisitors()).subscribe();
+    }
+  }
+  if(visitorsBtn) visitorsBtn.onclick=async()=>{if(currentUserId!==NIKI_UID)return;await loadVisitors();visitorsOverlay.classList.add("show");visitorsOverlay.setAttribute("aria-hidden","false")};
+  if($("visitorsClose")) $("visitorsClose").onclick=()=>{visitorsOverlay.classList.remove("show");visitorsOverlay.setAttribute("aria-hidden","true")};if($("visitorsClearBtn")) $("visitorsClearBtn").onclick=async()=>{if(currentUserId!==NIKI_UID||guestMode)return;if(!confirm("Delete all visitor history? This cannot be undone."))return;const b=$("visitorsClearBtn");b.disabled=true;const {error}=await sb.from("site_visits").delete().not("id","is",null);b.disabled=false;if(error){alert("Could not delete visitor history.");return}await loadVisitors();};
+  if(visitorsOverlay) visitorsOverlay.onclick=e=>{if(e.target===visitorsOverlay){visitorsOverlay.classList.remove("show");visitorsOverlay.setAttribute("aria-hidden","true")}};
+
   function applyAccountBadge(){
     const old=document.getElementById("averyAccountBadge");
     if(old) old.remove();
@@ -1377,6 +1444,7 @@
   function balance(){return transactionBalance()-goalsAllocated()}
 
   function enterGuestMode(){
+    if(visitorsBtn) visitorsBtn.style.display="none";
     guestMode=true;
     currentUserId=null;
     unlocked=false;
@@ -1426,15 +1494,83 @@
     goalsList.innerHTML="";
     if(!goals.length){if(emptyGoals)emptyGoals.style.display="block";return}
     if(emptyGoals)emptyGoals.style.display="none";
-    [...goals].sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)||a.id-b.id).forEach(g=>{
+
+    const rank=g=>g.status==="pending"?0:g.status==="achieved"?1:2;
+    const ordered=[...goals].sort((a,b)=>{
+      const ar=rank(a), br=rank(b);
+      if(ar!==br) return ar-br;
+      if(ar>0){
+        const at=new Date((a.status==="spent"?a.spent_at:a.achieved_at)||0).getTime();
+        const bt=new Date((b.status==="spent"?b.spent_at:b.achieved_at)||0).getTime();
+        return bt-at;
+      }
+      return (a.sort_order||0)-(b.sort_order||0)||a.id-b.id;
+    });
+
+    let progressCapital=Math.max(0,transactionBalance()-allocated);
+    ordered.forEach(g=>{
       const achieved=g.status==="achieved";
-      const row=document.createElement("div");row.className="goal-entry "+(achieved?"achieved":"pending");
-      row.innerHTML=`<div class="goal-entry-icon">🎯</div><div><div class="goal-entry-title"></div><div class="goal-entry-meta"></div></div><div class="goal-entry-amount"></div>`;
-      row.querySelector(".goal-entry-title").textContent=g.title;
-      row.querySelector(".goal-entry-meta").innerHTML=achieved?'Reserved in Goals · <span class="goal-entry-status">Goal reached</span>':'Waiting to be reached · <span class="goal-entry-status">In progress</span>';
-      row.querySelector(".goal-entry-amount").textContent=eur(achieved?g.allocated_amount:g.target_amount);
+      const spent=g.status==="spent";
+      const target=Number(g.target_amount||0);
+      const toward=(achieved||spent)?target:Math.min(progressCapital,target);
+      if(!achieved&&!spent) progressCapital=Math.max(0,progressCapital-target);
+      const pct=target>0?Math.min(100,Math.round((toward/target)*100)):0;
+      const row=document.createElement("div");
+      row.className="goal-entry "+(spent?"spent":achieved?"achieved":"pending");
+      row.innerHTML=`<div class="goal-entry-icon"></div><div><div class="goal-entry-title"></div><div class="goal-entry-meta"></div></div><div class="goal-entry-amount"></div>`;
+      row.querySelector(".goal-entry-icon").textContent=spent?"✅":achieved?"🎉":"🎯";
+      row.querySelector(".goal-entry-title").textContent=g.title+(spent?" — COMPLETED":achieved?" — GOAL REACHED!":"");
+      const meta=row.querySelector(".goal-entry-meta");
+      const amountBox=row.querySelector(".goal-entry-amount");
+
+      if(spent){
+        let completed="Completed · Money spent";
+        if(g.spent_at) completed+=" · "+new Intl.DateTimeFormat("en-GB",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(g.spent_at));
+        meta.innerHTML=`Goal reached and funds used 💚<span class="goal-entry-status">${completed}</span>`;
+        amountBox.textContent=eur(target)+" spent";
+      }else if(achieved){
+        let completed="Completed";
+        if(g.achieved_at) completed+=" · "+new Intl.DateTimeFormat("en-GB",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(g.achieved_at));
+        meta.innerHTML=`${completed} 💚<span class="goal-entry-status">Goal reached ✓</span>`;
+
+        if(currentUserId===NIKI_UID && !guestMode){
+          const wrap=document.createElement("div");
+          wrap.className="goal-spend-wrap";
+          const saved=document.createElement("div");
+          saved.textContent=eur(g.allocated_amount||target)+" saved";
+          const btn=document.createElement("button");
+          btn.type="button";
+          btn.className="goal-spend-btn";
+          btn.textContent="SPEND";
+          btn.onclick=()=>spendGoal(g,btn);
+          wrap.append(saved,btn);
+          amountBox.replaceWith(wrap);
+        }else{
+          amountBox.textContent=eur(g.allocated_amount||target)+" saved";
+        }
+      }else{
+        meta.innerHTML=`<span class="goal-entry-status">In progress</span><div class="goal-progress"><div class="goal-progress-fill" style="width:${pct}%"></div></div><div class="goal-progress-text">${eur(toward)} / ${eur(target)} · ${pct}%</div>`;
+        amountBox.textContent=eur(target);
+      }
       goalsList.appendChild(row);
     });
+  }
+
+  async function spendGoal(goal,button){
+    if(guestMode || currentUserId!==NIKI_UID || goal.status!=="achieved") return;
+    const amount=Number(goal.allocated_amount||goal.target_amount||0);
+    if(!confirm(`Spend ${eur(amount)} for ${goal.title}?\n\nThis will mark the goal as completed and record the money as spent.`)) return;
+    button.disabled=true;
+    button.textContent="SPENDING…";
+    const {error}=await sb.rpc("spend_goal",{p_goal_id:goal.id});
+    if(error){
+      button.disabled=false;
+      button.textContent="SPEND";
+      alert("Spend failed: "+error.message);
+      return;
+    }
+    await loadRows();
+    toast(`${goal.title} marked as completed. ${eur(amount)} spent.`,true);
   }
 
   function render(){
@@ -1461,7 +1597,7 @@
   async function loadRows(){
     const [txRes,goalRes]=await Promise.all([
       sb.from("transactions").select("id,name,type,amount,transaction_date,created_at"),
-      sb.from("goals").select("id,title,target_amount,allocated_amount,status,sort_order,achieved_at,created_at")
+      sb.from("goals").select("id,title,target_amount,allocated_amount,status,sort_order,achieved_at,spent_at,spent_by,created_at")
     ]);
     if(txRes.error){alert("Backend error: "+txRes.error.message);return}
     if(goalRes.error){alert("Goals backend error: "+goalRes.error.message);return}
@@ -1542,7 +1678,7 @@
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!delOverlay.hidden)closeDelete();$("motivationOverlay").hidden=true;$("withdrawNoticeOverlay").hidden=true;if(modal.classList.contains("show")){modal.classList.remove("show");modal.setAttribute("aria-hidden","true")}}});
 
   const {data:{session}}=await sb.auth.getSession();
-  if(session){currentUserId=session.user?.id||null;syncOwnerChipOrder();applyProfileIdentity();auth.style.display="none";lockView.style.display="flex";accountView.style.display="none"}
+  if(session){currentUserId=session.user?.id||null;syncOwnerChipOrder();applyProfileIdentity();syncVisitorsAccess();auth.style.display="none";lockView.style.display="flex";accountView.style.display="none"}
   else{auth.style.display="block";lockView.style.display="none";accountView.style.display="none"}
 
   $("guestViewBtn").addEventListener("click",enterGuestMode);
@@ -1551,7 +1687,7 @@
     e.preventDefault();const err=$("backendAuthError");err.textContent="Signing in…";
     const {data,error}=await sb.auth.signInWithPassword({email:$("backendEmail").value.trim(),password:$("backendPassword").value});
     if(error){err.textContent=error.message;return}
-    currentUserId=data.user?.id||null;applyProfileIdentity();
+    currentUserId=data.user?.id||null;applyProfileIdentity();syncVisitorsAccess();
     $("backendPassword").value="";auth.style.display="none";lockView.style.display="flex";accountView.style.display="none";pinInput.focus();
   });
 
